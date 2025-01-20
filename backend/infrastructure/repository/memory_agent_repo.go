@@ -8,19 +8,19 @@ import (
 )
 
 type MemoryAgentRepo struct {
-	agents []*domain.Agent
+	Agents []*domain.Agent
 }
 
 func NewMemoryAgentRepo() *MemoryAgentRepo {
 	return &MemoryAgentRepo{
-		agents: make([]*domain.Agent, 0),
+		Agents: make([]*domain.Agent, 0),
 	}
 }
 
 func (m *MemoryAgentRepo) GetAgentsByCommunity(ctx context.Context, communityID string) ([]*domain.Agent, error) {
 	// シンプルにフィルタ
 	var result []*domain.Agent
-	for _, a := range m.agents {
+	for _, a := range m.Agents {
 		if a.CommunityID == communityID {
 			result = append(result, a)
 		}
