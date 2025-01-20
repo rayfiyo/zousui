@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"zousui/infrastructure/repository"
-	"zousui/interface/controller"
-	"zousui/interface/gateway"
-	"zousui/usecase"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rayfiyo/zousui/backend/domain"
+	"github.com/rayfiyo/zousui/backend/infrastructure/repository"
+	"github.com/rayfiyo/zousui/backend/interface/controller"
+	"github.com/rayfiyo/zousui/backend/interface/gateway"
+	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
 func main() {
