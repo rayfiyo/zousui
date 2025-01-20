@@ -2,20 +2,19 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"zousui/usecase"
 
-	"github.com/gin-gonic/gin" // 例: Ginフレームワークを使用
+	"github.com/gin-gonic/gin"
+	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
 // SimulateController: シミュレーションAPIをハンドリング
 type SimulateController struct {
-	simulateUC *usecase.SimulateCultureEvolutionUsecase
+	simulateUC *usecase.SimulateCulureEvolutionUsecase
 }
 
 // NewSimulateController: コンストラクタ
-func NewSimulateController(simUC *usecase.SimulateCultureEvolutionUsecase) *SimulateController {
+func NewSimulateController(simUC *usecase.SimulateCulureEvolutionUsecase) *SimulateController {
 	return &SimulateController{simulateUC: simUC}
 }
 
