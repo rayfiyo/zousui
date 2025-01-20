@@ -10,11 +10,11 @@ import (
 
 // SimulateController: シミュレーションAPIをハンドリング
 type SimulateController struct {
-	simulateUC *usecase.SimulateCulureEvolutionUsecase
+	simulateUC *usecase.SimulateCultureEvolutionUsecase
 }
 
 // NewSimulateController: コンストラクタ
-func NewSimulateController(simUC *usecase.SimulateCulureEvolutionUsecase) *SimulateController {
+func NewSimulateController(simUC *usecase.SimulateCultureEvolutionUsecase) *SimulateController {
 	return &SimulateController{simulateUC: simUC}
 }
 
