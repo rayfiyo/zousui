@@ -22,6 +22,7 @@ type CommunityRepository interface {
 	GetByID(ctx context.Context, id string) (*domain.Community, error)
 	Save(ctx context.Context, community *domain.Community) error
 	GetAll(ctx context.Context) ([]*domain.Community, error)
+	Delete(ctx context.Context, id string) error
 }
 
 // LLMGateway: LLMに問い合わせるためのインタフェース
