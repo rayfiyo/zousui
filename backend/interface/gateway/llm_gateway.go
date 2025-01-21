@@ -2,18 +2,26 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
-// MockLLMGateway: PoC用に、LLMへの問い合わせをモック化(実際にはOpenAIや他APIへHTTPリクエスト)
-type MockLLMGateway struct{}
+// MockLLMGatewayJSON: LLMへの問い合わせ結果のJSONをモック化
+type MockLLMGatewayJSON struct{}
 
-// GenerateCultureUpdate: ダミー実装
-func (m *MockLLMGateway) GenerateCultureUpdate(ctx context.Context, prompt string) (string, error) {
-	// 本来は外部APIへHTTPリクエストなど行う
-	return "【新しい文化】神秘の踊りを中心とした祭典を毎週開催し、踊り子がリーダーとして社会を動かす制度", nil
+// GenerateCultureUpdate: LLMに問い合わせて、文化の変化をJSONで取得する
+func (m *MockLLMGatewayJSON) GenerateCultureUpdate(ctx context.Context, prompt string) (string, error) {
+	// ここではダミーでJSONを返す
+	// 実際はOpenAI APIにHTTPリクエストして、そこからのレスポンスを返す
+	jsonResult := `{
+        "newCulture": "踊りを中心にした新たな祭典文化",
+        "populationChange": 15
+    }`
+	fmt.Println("[DEBUG] Prompt to LLM:", prompt)
+	fmt.Println("[DEBUG] Return JSON:", jsonResult)
+	return jsonResult, nil
 }
 
 // インタフェースが正しく実装されているかコンパイル時チェック
-var _ usecase.LLMGateway = (*MockLLMGateway)(nil)
+var _ usecase.LLMGateway = (*MockLLMGatewayJSON)(nil)
