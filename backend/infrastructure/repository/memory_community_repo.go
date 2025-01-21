@@ -20,6 +20,7 @@ func NewMemoryCommunityRepo() *MemoryCommunityRepo {
 	}
 }
 
+// GetByID: IDでコミュニティを取得
 func (m *MemoryCommunityRepo) GetByID(ctx context.Context, id string) (*domain.Community, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -31,6 +32,7 @@ func (m *MemoryCommunityRepo) GetByID(ctx context.Context, id string) (*domain.C
 	return c, nil
 }
 
+// Save: コミュニティを保存
 func (m *MemoryCommunityRepo) Save(ctx context.Context, c *domain.Community) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -38,7 +40,7 @@ func (m *MemoryCommunityRepo) Save(ctx context.Context, c *domain.Community) err
 	return nil
 }
 
-// 全コミュニティをリストとして取得
+// Get All: 全コミュニティをリストとして取得
 func (m *MemoryCommunityRepo) GetAll(ctx context.Context) ([]*domain.Community, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -47,6 +49,17 @@ func (m *MemoryCommunityRepo) GetAll(ctx context.Context) ([]*domain.Community, 
 		result = append(result, comm)
 	}
 	return result, nil
+}
+
+// Delete: コミュニティを削除
+func (m *MemoryCommunityRepo) Delete(ctx context.Context, id string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if _, ok := m.communities[id]; !ok {
+		return errors.New("community not found")
+	}
+	delete(m.communities, id)
+	return nil
 }
 
 // インタフェース実装をチェック
