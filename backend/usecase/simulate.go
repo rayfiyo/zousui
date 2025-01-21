@@ -5,43 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/rayfiyo/zousui/backend/domain"
+	"github.com/rayfiyo/zousui/backend/domain/entity"
+	"github.com/rayfiyo/zousui/backend/domain/repository"
 	"github.com/rayfiyo/zousui/backend/utils"
 )
 
-// AgentRepository: エージェントに関するリポジトリインタフェース(読み書き)
-type AgentRepository interface {
-	GetByID(ctx context.Context, id string) (*domain.Agent, error)
-	Save(ctx context.Context, agent *domain.Agent) error
-	GetAll(ctx context.Context) ([]*domain.Agent, error)
-	GetAgentsByCommunity(ctx context.Context, communityID string) ([]*domain.Agent, error)
-}
-
-// CommunityRepository: コミュニティに関するリポジトリインタフェース(読み書き)
-type CommunityRepository interface {
-	GetByID(ctx context.Context, id string) (*domain.Community, error)
-	Save(ctx context.Context, community *domain.Community) error
-	GetAll(ctx context.Context) ([]*domain.Community, error)
-	Delete(ctx context.Context, id string) error
-}
-
-// LLMGateway: LLMに問い合わせるためのインタフェース
-type LLMGateway interface {
-	GenerateCultureUpdate(ctx context.Context, prompt string) (string, error)
-}
-
 // SimulateCultureEvolutionUsecase: 文化を進化(変化)させるシミュレーション例
 type SimulateCultureEvolutionUsecase struct {
-	communityRepo CommunityRepository
-	agentRepo     AgentRepository
-	llmGateway    LLMGateway
+	communityRepo repository.CommunityRepository
+	agentRepo     repository.AgentRepository
+	llmGateway    repository.LLMGateway
 }
 
 // NewSimulateCultureEvolutionUsecase: コンストラクタ
 func NewSimulateCultureEvolutionUsecase(
-	cr CommunityRepository,
-	ar AgentRepository,
-	lg LLMGateway,
+	cr repository.CommunityRepository,
+	ar repository.AgentRepository,
+	lg repository.LLMGateway,
 ) *SimulateCultureEvolutionUsecase {
 	return &SimulateCultureEvolutionUsecase{
 		communityRepo: cr,
@@ -82,7 +62,7 @@ func (uc *SimulateCultureEvolutionUsecase) Execute(ctx context.Context, communit
 	}
 
 	// JSONパース
-	var result domain.CultureUpdateResponse
+	var result entity.CultureUpdateResponse
 	if err := json.Unmarshal([]byte(llmResp), &result); err != nil {
 		// ここで 単純に文章全体を newCulture に入れる処理もアリ
 		// result.NewCulture = llmResp
