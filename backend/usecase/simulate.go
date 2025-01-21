@@ -16,6 +16,9 @@ type CommunityRepository interface {
 
 // AgentRepository: エージェントに関するリポジトリインタフェース(読み書き)
 type AgentRepository interface {
+	GetByID(ctx context.Context, id string) (*domain.Agent, error)
+	Save(ctx context.Context, agent *domain.Agent) error
+	GetAll(ctx context.Context) ([]*domain.Agent, error)
 	GetAgentsByCommunity(ctx context.Context, communityID string) ([]*domain.Agent, error)
 }
 
