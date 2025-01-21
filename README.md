@@ -5,59 +5,75 @@
 
 ## tree
 
+### backend
+
 ```bash
-zousui
-├── backend
+tree backend/
+```
+
+```bash
+backend/
+├── cmd
 │   ├── cmd
-│   │   └── main.go
-│   ├── domain
+│   └── main.go
+├── domain
+│   ├── entity
 │   │   ├── agent.go
-│   │   └── communitiy.go
-│   ├── go.mod
-│   ├── go.sum
-│   ├── infrastructure
-│   │   └── repository
-│   │       ├── memory_agent_repo.go
-│   │       └── memory_community_repo.go
-│   ├── interface
-│   │   ├── controller
-│   │   │   ├── community_handler.go
-│   │   │   └── rest_handler.go
-│   │   └── gateway
-│   │       └── llm_gateway.go
-│   └── usecase
-│       ├── community.go
+│   │   └── community.go
+│   └── repository
 │       └── simulate.go
-├── changelog.config.js
-├── frontend
-│   ├── app
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   ├── eslint.config.mjs
-│   ├── next.config.ts
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── public
-│   │   ├── file.svg
-│   │   ├── globe.svg
-│   │   ├── next.svg
-│   │   ├── vercel.svg
-│   │   └── window.svg
-│   ├── README.md
-│   ├── src
-│   │   └── app
-│   │       ├── favicon.ico
-│   │       ├── globals.css
-│   │       ├── layout.tsx
-│   │       ├── page.module.css
-│   │       └── page.tsx
-│   └── tsconfig.json
-├── LICENSE
-└── README.md
-
-15 directories, 33 files
+├── go.mod
+├── go.sum
+├── infrastructure
+│   └── repository
+│       ├── memory_agent_repo.go
+│       └── memory_community_repo.go
+├── interface
+│   ├── controller
+│   │   ├── community_controller.go
+│   │   ├── diplomacy_controller.go
+│   │   └── simulate_controller.go
+│   ├── gateway
+│   │   └── llm_gateway.go
+│   └── router
+│       └── router.go
+├── usecase
+│   ├── community.go
+│   ├── diplomacy.go
+│   └── simulate.go
+└── utils
+    └── const.go
 ```
 
+### frontend
+
+```bash
+tree -I "node_modules" frontend/
 ```
 
+```bash
+frontend/
+├── app
+│   ├── layout.tsx
+│   └── page.tsx
+├── eslint.config.mjs
+├── next.config.ts
+├── next-env.d.ts
+├── package.json
+├── package-lock.json
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── README.md
+├── src
+│   └── app
+│       ├── favicon.ico
+│       ├── globals.css
+│       ├── layout.tsx
+│       ├── page.module.css
+│       └── page.tsx
+└── tsconfig.json
 ```
