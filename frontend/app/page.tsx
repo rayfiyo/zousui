@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from "react";
+import { Button, ButtonGroup } from "react-bootstrap";
 
 type Community = {
   ID: string;
@@ -16,35 +16,35 @@ export default function HomePage() {
   // 1. コミュニティ一覧を取得
   async function fetchCommunities() {
     try {
-      const res = await fetch('http://localhost:8080/communities');
+      const res = await fetch("http://localhost:8080/communities");
       if (!res.ok) {
         throw new Error(`Error: ${res.status} ${res.statusText}`);
       }
       const data = await res.json();
       setCommunities(data);
     } catch (err) {
-      console.error('Error fetching communities:', err);
+      console.error("Error fetching communities:", err);
     }
   }
 
   // 2. コミュニティ削除
   async function handleDelete(id: string) {
     const confirmed = window.confirm(
-      'Are you sure you want to delete this community?'
+      "Are you sure you want to delete this community?"
     );
     if (!confirmed) return;
     try {
       const res = await fetch(`http://localhost:8080/communities/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       if (!res.ok) {
         alert(`Delete failed. Status: ${res.status}`);
         return;
       }
-      alert('Community deleted.');
+      alert("Community deleted.");
       fetchCommunities();
     } catch (err) {
-      console.error('Error deleting community:', err);
+      console.error("Error deleting community:", err);
     }
   }
 
@@ -52,18 +52,18 @@ export default function HomePage() {
   async function handleSimulate(communityID: string) {
     try {
       const res = await fetch(`http://localhost:8080/simulate/${communityID}`, {
-        method: 'POST',
+        method: "POST",
       });
       if (!res.ok) {
         alert(`Simulation failed. Status: ${res.status}`);
         return;
       }
-      alert('Simulation executed successfully.');
+      alert("Simulation executed successfully.");
 
       // 再取得して表示更新
       fetchCommunities();
     } catch (err) {
-      console.error('Error simulating:', err);
+      console.error("Error simulating:", err);
     }
   }
 
@@ -74,7 +74,6 @@ export default function HomePage() {
 
   return (
     <main>
-      {/* <main className="container mt-4">*/}
       <h1 className="mb-4">Zousui Communities</h1>
       {communities.length === 0 ? (
         <p>No communities found.</p>
@@ -89,27 +88,38 @@ export default function HomePage() {
                     Population: {comm.Population} <br />
                     Culture: {comm.Culture}
                   </p>
-                  {/* シミュレーション */}
-                  <button
-                    className="btn btn-primary me-2"
-                    onClick={() => handleSimulate(comm.ID)}
-                  >
-                    Simulate
-                  </button>
-                  {/* 詳細ページへのリンク */}
-                  <Link
-                    href={`/community/${comm.ID}`}
-                    className="btn btn-secondary me-2"
-                  >
-                    Details
-                  </Link>
-                  {/* 削除 */}
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDelete(comm.ID)}
-                  >
-                    Delete
-                  </button>
+
+                  <div className="d-flex justify-content-center">
+                    <ButtonGroup
+                      vertical
+                      className="w-100"
+                      style={{ maxWidth: "300px" }}
+                    >
+                      {/* シミュレーション */}
+                      <Button
+                        variant="primary"
+                        onClick={() => handleSimulate(comm.ID)}
+                      >
+                        Simulate
+                      </Button>
+
+                      {/* 詳細ページへのリンク */}
+                      <Button
+                        variant="secondary"
+                        href={`/community/${comm.ID}`}
+                      >
+                        Details
+                      </Button>
+
+                      {/* 削除 */}
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDelete(comm.ID)}
+                      >
+                        Delete
+                      </Button>
+                    </ButtonGroup>
+                  </div>
                 </div>
               </div>
             </div>
