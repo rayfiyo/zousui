@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/rayfiyo/zousui/backend/domain/entity"
 	"github.com/rayfiyo/zousui/backend/infrastructure/repository"
 	"github.com/rayfiyo/zousui/backend/interface/controller"
 	"github.com/rayfiyo/zousui/backend/interface/gateway"
+	"github.com/rayfiyo/zousui/backend/interface/router"
 	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
@@ -26,24 +25,14 @@ func main() {
 	communityUC := usecase.NewCommunityUsecase(communityRepo)
 
 	// コントローラ
-	simCtrl := controller.NewSimulateController(simulateUC)
 	commCtrl := controller.NewCommunityController(communityUC)
+	simCtrl := controller.NewSimulateController(simulateUC)
 
 	// データ初期化
 	seedData(communityRepo, agentRepo)
 
-	// Gin
-	r := gin.Default()
-	r.Use(cors.Default())
-
-	// コミュニティ一覧 + CRUD
-	r.GET("/communities", commCtrl.GetCommunities)
-	r.GET("/communities/:id", commCtrl.GetCommunity)
-	r.POST("/communities", commCtrl.CreateCommunity)
-	r.DELETE("/communities/:id", commCtrl.DeleteCommunity)
-
-	// シミュレーション実行
-	r.POST("/simulate/:communityID", simCtrl.Simulate)
+	// ルーティング
+	r := router.NewRouter(commCtrl, simCtrl)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")
