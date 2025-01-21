@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rayfiyo/zousui/backend/domain"
+	"github.com/rayfiyo/zousui/backend/domain/entity"
+	"github.com/rayfiyo/zousui/backend/domain/repository"
 )
 
 // CommunityUsecase: コミュニティに関するユースケースをまとめる
 type CommunityUsecase struct {
-	communityRepo CommunityRepository
+	communityRepo repository.CommunityRepository
 }
 
-func NewCommunityUsecase(repo CommunityRepository) *CommunityUsecase {
+func NewCommunityUsecase(repo repository.CommunityRepository) *CommunityUsecase {
 	return &CommunityUsecase{
 		communityRepo: repo,
 	}
@@ -43,7 +44,7 @@ func (cu *CommunityUsecase) DeleteCommunity(ctx context.Context, id string) erro
 }
 
 // GetAllCommunities: 全コミュニティを取得
-func (cu *CommunityUsecase) GetAllCommunities(ctx context.Context) ([]*domain.Community, error) {
+func (cu *CommunityUsecase) GetAllCommunities(ctx context.Context) ([]*entity.Community, error) {
 	// リポジトリに全件取得メソッドを用意する or InMemoryなら鍵をすべて走査
 	return cu.communityRepo.GetAll(ctx)
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rayfiyo/zousui/backend/usecase"
+	"github.com/rayfiyo/zousui/backend/domain/repository"
 )
 
 // MockLLMGatewayJSON: LLMへの問い合わせ結果のJSONをモック化
@@ -24,4 +24,4 @@ func (m *MockLLMGatewayJSON) GenerateCultureUpdate(ctx context.Context, prompt s
 }
 
 // インタフェースが正しく実装されているかコンパイル時チェック
-var _ usecase.LLMGateway = (*MockLLMGatewayJSON)(nil)
+var _ repository.LLMGateway = (*MockLLMGatewayJSON)(nil)
