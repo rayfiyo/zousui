@@ -20,7 +20,7 @@ func NewCommunityUsecase(repo repository.CommunityRepository) *CommunityUsecase 
 }
 
 // CreateCommunity: コミュニティを作成
-func (cu *CommunityUsecase) CreateCommunity(ctx context.Context, comm *domain.Community) error {
+func (cu *CommunityUsecase) CreateCommunity(ctx context.Context, comm *entity.Community) error {
 	// IDが重複していないか簡単にチェック
 	existing, _ := cu.communityRepo.GetByID(ctx, comm.ID)
 	if existing != nil {
@@ -34,7 +34,7 @@ func (cu *CommunityUsecase) CreateCommunity(ctx context.Context, comm *domain.Co
 }
 
 // UpdateCommunity: コミュニティを更新
-func (cu *CommunityUsecase) GetCommunityByID(ctx context.Context, id string) (*domain.Community, error) {
+func (cu *CommunityUsecase) GetCommunityByID(ctx context.Context, id string) (*entity.Community, error) {
 	return cu.communityRepo.GetByID(ctx, id)
 }
 
