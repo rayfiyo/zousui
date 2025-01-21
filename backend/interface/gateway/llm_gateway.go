@@ -13,7 +13,7 @@ type MockLLMGatewayJSON struct{}
 // GenerateCultureUpdate: LLMに問い合わせて、文化の変化をJSONで取得する
 func (m *MockLLMGatewayJSON) GenerateCultureUpdate(ctx context.Context, prompt string) (string, error) {
 	// ここではダミーでJSONを返す
-	// 実際はOpenAI APIにHTTPリクエストして、そこからのレスポンスを返す
+	// [TODO] OpenAI APIにHTTPリクエストして、そこからのレスポンスを返す
 	jsonResult := `{
         "newCulture": "踊りを中心にした新たな祭典文化",
         "populationChange": 15
