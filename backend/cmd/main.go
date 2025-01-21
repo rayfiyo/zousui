@@ -19,7 +19,7 @@ func main() {
 	agentRepo := repository.NewMemoryAgentRepo()
 
 	// LLMゲートウェイ（モック）
-	llmGw := &gateway.MockLLMGateway{}
+	llmGw := &gateway.MockLLMGatewayJSON{}
 
 	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
