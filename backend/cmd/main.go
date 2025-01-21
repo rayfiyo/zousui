@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rayfiyo/zousui/backend/domain"
 	"github.com/rayfiyo/zousui/backend/infrastructure/repository"
@@ -32,6 +33,7 @@ func main() {
 
 	// Gin
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	// コミュニティ一覧取得
 	r.GET("/communities", commCtrl.GetCommunities)
