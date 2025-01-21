@@ -5,23 +5,23 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/rayfiyo/zousui/backend/domain"
-	"github.com/rayfiyo/zousui/backend/usecase"
+	"github.com/rayfiyo/zousui/backend/domain/entity"
+	"github.com/rayfiyo/zousui/backend/domain/repository"
 )
 
 type MemoryCommunityRepo struct {
 	mu          sync.RWMutex
-	communities map[string]*domain.Community
+	communities map[string]*entity.Community
 }
 
 func NewMemoryCommunityRepo() *MemoryCommunityRepo {
 	return &MemoryCommunityRepo{
-		communities: make(map[string]*domain.Community),
+		communities: make(map[string]*entity.Community),
 	}
 }
 
 // GetByID: IDでコミュニティを取得
-func (m *MemoryCommunityRepo) GetByID(ctx context.Context, id string) (*domain.Community, error) {
+func (m *MemoryCommunityRepo) GetByID(ctx context.Context, id string) (*entity.Community, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -33,7 +33,7 @@ func (m *MemoryCommunityRepo) GetByID(ctx context.Context, id string) (*domain.C
 }
 
 // Save: コミュニティを保存
-func (m *MemoryCommunityRepo) Save(ctx context.Context, c *domain.Community) error {
+func (m *MemoryCommunityRepo) Save(ctx context.Context, c *entity.Community) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.communities[c.ID] = c
@@ -41,10 +41,10 @@ func (m *MemoryCommunityRepo) Save(ctx context.Context, c *domain.Community) err
 }
 
 // Get All: 全コミュニティをリストとして取得
-func (m *MemoryCommunityRepo) GetAll(ctx context.Context) ([]*domain.Community, error) {
+func (m *MemoryCommunityRepo) GetAll(ctx context.Context) ([]*entity.Community, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	result := make([]*domain.Community, 0, len(m.communities))
+	result := make([]*entity.Community, 0, len(m.communities))
 	for _, comm := range m.communities {
 		result = append(result, comm)
 	}
@@ -63,4 +63,4 @@ func (m *MemoryCommunityRepo) Delete(ctx context.Context, id string) error {
 }
 
 // インタフェース実装をチェック
-var _ usecase.CommunityRepository = (*MemoryCommunityRepo)(nil)
+var _ repository.CommunityRepository = (*MemoryCommunityRepo)(nil)

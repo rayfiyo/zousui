@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/rayfiyo/zousui/backend/domain"
+	"github.com/rayfiyo/zousui/backend/domain/entity"
 	"github.com/rayfiyo/zousui/backend/infrastructure/repository"
 	"github.com/rayfiyo/zousui/backend/interface/controller"
 	"github.com/rayfiyo/zousui/backend/interface/gateway"
@@ -48,7 +48,7 @@ func main() {
 // seedData: テスト用の初期データを挿入
 func seedData(cr *repository.MemoryCommunityRepo, ar *repository.MemoryAgentRepo) {
 	communityID := "comm-1"
-	comm := &domain.Community{
+	comm := &entity.Community{
 		ID:         communityID,
 		Name:       "DesertTribe",
 		Population: 100,
@@ -58,7 +58,7 @@ func seedData(cr *repository.MemoryCommunityRepo, ar *repository.MemoryAgentRepo
 
 	// 他に複数作ってもOK
 	communityID2 := "comm-2"
-	comm2 := &domain.Community{
+	comm2 := &entity.Community{
 		ID:         communityID2,
 		Name:       "OceanicCity",
 		Population: 300,
@@ -66,13 +66,13 @@ func seedData(cr *repository.MemoryCommunityRepo, ar *repository.MemoryAgentRepo
 	}
 	cr.Save(context.TODO(), comm2)
 
-	agent1 := &domain.Agent{
+	agent1 := &entity.Agent{
 		ID:          "agent-1",
 		Name:        "Aisha",
 		CommunityID: communityID,
 		Personality: "好奇心旺盛で穏やか",
 	}
-	agent2 := &domain.Agent{
+	agent2 := &entity.Agent{
 		ID:          "agent-2",
 		Name:        "Jamal",
 		CommunityID: communityID,
