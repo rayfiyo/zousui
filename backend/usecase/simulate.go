@@ -24,7 +24,7 @@ type LLMGateway interface {
 }
 
 // SimulateCultureEvolutionUsecase: 文化を進化(変化)させるシミュレーション例
-type SimulateCulureEvolutionUsecase struct {
+type SimulateCultureEvolutionUsecase struct {
 	communityRepo CommunityRepository
 	agentRepo     AgentRepository
 	llmGateway    LLMGateway
@@ -35,8 +35,8 @@ func NewSimulateCultureEvolutionUsecase(
 	cr CommunityRepository,
 	ar AgentRepository,
 	lg LLMGateway,
-) *SimulateCulureEvolutionUsecase {
-	return &SimulateCulureEvolutionUsecase{
+) *SimulateCultureEvolutionUsecase {
+	return &SimulateCultureEvolutionUsecase{
 		communityRepo: cr,
 		agentRepo:     ar,
 		llmGateway:    lg,

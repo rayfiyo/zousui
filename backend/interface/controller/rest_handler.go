@@ -2,11 +2,10 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"zousui/usecase"
 
-	"github.com/gin-gonic/gin" // 例: Ginフレームワークを使用
+	"github.com/gin-gonic/gin"
+	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
 // SimulateController: シミュレーションAPIをハンドリング
