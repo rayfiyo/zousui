@@ -36,8 +36,12 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	// コミュニティ一覧取得
+	// コミュニティ一覧 + CRUD
 	r.GET("/communities", commCtrl.GetCommunities)
+	r.GET("/communities/:id", commCtrl.GetCommunity)
+	r.POST("/communities", commCtrl.CreateCommunity)
+	r.DELETE("/communities/:id", commCtrl.DeleteCommunity)
+
 	// シミュレーション実行
 	r.POST("/simulate/:communityID", simCtrl.Simulate)
 
