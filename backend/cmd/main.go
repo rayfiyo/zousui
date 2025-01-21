@@ -12,33 +12,31 @@ import (
 )
 
 func main() {
-	// =====================================
-	// 依存オブジェクト(リポジトリ & ゲートウェイ)初期化
-	// =====================================
+	// リポジトリ初期化
 	communityRepo := repository.NewMemoryCommunityRepo()
 	agentRepo := repository.NewMemoryAgentRepo()
 
-	// 例として モックLLMゲートウェイ
+	// LLMゲートウェイ（モック）
 	llmGw := &gateway.MockLLMGateway{}
 
-	// =====================================
-	// ユースケース生成
-	// =====================================
+	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
+	communityUC := usecase.NewCommunityUsecase(communityRepo)
 
-	// =====================================
-	// データ初期投入 (コミュニティやエージェント)
-	// =====================================
+	// コントローラ
+	simCtrl := controller.NewSimulateController(simulateUC)
+	commCtrl := controller.NewCommunityController(communityUC)
+
+	// データ初期化
 	seedData(communityRepo, agentRepo)
 
-	// =====================================
-	// HTTPサーバ起動
-	// =====================================
+	// Gin
 	r := gin.Default()
 
-	// コントローラ生成 & ルート設定
-	simCtrl := controller.NewSimulateController(simulateUC)
-	simCtrl.SetupRoutes(r)
+	// コミュニティ一覧取得
+	r.GET("/communities", commCtrl.GetCommunities)
+	// シミュレーション実行
+	r.POST("/simulate/:communityID", simCtrl.Simulate)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")
@@ -54,6 +52,16 @@ func seedData(cr *repository.MemoryCommunityRepo, ar *repository.MemoryAgentRepo
 		Culture:    "砂漠での生存術が中心の文化",
 	}
 	cr.Save(nil, comm)
+
+	// 他に複数作ってもOK
+	communityID2 := "comm-2"
+	comm2 := &domain.Community{
+		ID:         communityID2,
+		Name:       "OceanicCity",
+		Population: 300,
+		Culture:    "海底で歌と踊りを好む平和な国",
+	}
+	cr.Save(nil, comm2)
 
 	agent1 := &domain.Agent{
 		ID:          "agent-1",
