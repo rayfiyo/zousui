@@ -1,4 +1,4 @@
-package domain
+package entity
 
 // Agent: LLMやAIキャラクター（コミュニティを担当するエージェント）
 type Agent struct {
