@@ -1,8 +1,8 @@
-// app/community/[id]/page.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Button, Card, Spinner, Container, Row, Col } from "react-bootstrap";
 
 type Community = {
   ID: string;
@@ -18,9 +18,11 @@ export default function CommunityDetailPage() {
   const communityID = params.id as string;
 
   const [community, setCommunity] = useState<Community | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function fetchCommunity() {
     try {
+      setLoading(true);
       const res = await fetch(
         `http://localhost:8080/communities/${communityID}`
       );
@@ -31,16 +33,17 @@ export default function CommunityDetailPage() {
       setCommunity(data);
     } catch (err) {
       console.error("Error fetching community:", err);
+    } finally {
+      setLoading(false);
     }
   }
 
-  // 更新をしたい場合(省略可能)
+  // 更新機能（サンプル）
   async function handleEdit() {
-    // 例: NameやDescriptionを変更するフォームを表示し、PATCH or PUTするフロー
     alert("Edit functionality is not implemented yet.");
   }
 
-  // シミュレーション呼び出し
+  // シミュレーション
   async function handleSimulate() {
     if (!community) return;
     try {
@@ -66,27 +69,49 @@ export default function CommunityDetailPage() {
     }
   }, [communityID]);
 
+  // 読み込み中にスピナーを表示
+  if (loading) {
+    return (
+      <div className="text-center mt-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading community detail...</span>
+        </Spinner>
+      </div>
+    );
+  }
+
   if (!community) {
-    return <div>Loading...</div>;
+    return <div>No community data found.</div>;
   }
 
   return (
-    <div>
-      <h2>Community Detail: {community.Name}</h2>
-      <p>ID: {community.ID}</p>
-      <p>Description: {community.Description}</p>
-      <p>Population: {community.Population}</p>
-      <p>Culture: {community.Culture}</p>
+    <Container>
+      <Row className="justify-content-center">
+        <Col md={8}>
+          <h2 className="my-4">Community Detail</h2>
+          <Card>
+            <Card.Body>
+              <Card.Title>{community.Name}</Card.Title>
+              <Card.Text>ID: {community.ID}</Card.Text>
+              <Card.Text>Description: {community.Description}</Card.Text>
+              <Card.Text>Population: {community.Population}</Card.Text>
+              <Card.Text>Culture: {community.Culture}</Card.Text>
 
-      <button className="btn btn-primary me-2" onClick={handleSimulate}>
-        Simulate
-      </button>
-      <button className="btn btn-secondary me-2" onClick={handleEdit}>
-        Edit (TODO)
-      </button>
-      <button className="btn btn-light" onClick={() => router.push("/")}>
-        Back
-      </button>
-    </div>
+              <div className="d-flex gap-2 mt-4">
+                <Button variant="primary" onClick={handleSimulate}>
+                  Simulate
+                </Button>
+                <Button variant="secondary" onClick={handleEdit}>
+                  Edit (TODO)
+                </Button>
+                <Button variant="light" onClick={() => router.push("/")}>
+                  Back
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
