@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gin-contrib/cors"
@@ -53,7 +54,7 @@ func seedData(cr *repository.MemoryCommunityRepo, ar *repository.MemoryAgentRepo
 		Population: 100,
 		Culture:    "砂漠での生存術が中心の文化",
 	}
-	cr.Save(nil, comm)
+	cr.Save(context.TODO(), comm)
 
 	// 他に複数作ってもOK
 	communityID2 := "comm-2"
@@ -63,7 +64,7 @@ func seedData(cr *repository.MemoryCommunityRepo, ar *repository.MemoryAgentRepo
 		Population: 300,
 		Culture:    "海底で歌と踊りを好む平和な国",
 	}
-	cr.Save(nil, comm2)
+	cr.Save(context.TODO(), comm2)
 
 	agent1 := &domain.Agent{
 		ID:          "agent-1",
