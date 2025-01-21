@@ -22,17 +22,19 @@ func main() {
 
 	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
+	diploUC := usecase.NewDiplomacyUsecase(communityRepo, llmGw)
 	communityUC := usecase.NewCommunityUsecase(communityRepo)
 
 	// コントローラ
 	commCtrl := controller.NewCommunityController(communityUC)
+	diploCtrl := controller.NewDiplomacyController(diploUC)
 	simCtrl := controller.NewSimulateController(simulateUC)
 
 	// データ初期化
 	seedData(communityRepo, agentRepo)
 
 	// ルーティング
-	r := router.NewRouter(commCtrl, simCtrl)
+	r := router.NewRouter(commCtrl, diploCtrl, simCtrl)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")

@@ -9,6 +9,7 @@ import (
 
 func NewRouter(
 	commCtrl *controller.CommunityController,
+	diploCtrl *controller.DiplomacyController,
 	simCtrl *controller.SimulateController,
 ) *gin.Engine {
 	// Gin
@@ -20,6 +21,9 @@ func NewRouter(
 	r.GET("/communities/:id", commCtrl.GetCommunity)
 	r.POST("/communities", commCtrl.CreateCommunity)
 	r.DELETE("/communities/:id", commCtrl.DeleteCommunity)
+
+	// 外交シミュレーション
+	r.POST("/simulate/diplomacy", diploCtrl.SimulateDiplomacy)
 
 	// シミュレーション実行
 	r.POST("/simulate/:communityID", simCtrl.Simulate)
