@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, ButtonGroup } from "react-bootstrap";
+import Link from "next/link";
+import { Button, ButtonGroup, Row, Col, Card } from "react-bootstrap";
 
 type Community = {
   ID: string;
@@ -75,20 +76,22 @@ export default function HomePage() {
   return (
     <main>
       <h1 className="mb-4">Zousui Communities</h1>
+
       {communities.length === 0 ? (
         <p>No communities found.</p>
       ) : (
-        <div className="row">
+        <Row>
           {communities.map((comm) => (
-            <div key={comm.ID} className="col-md-4 mb-3">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">{comm.Name}</h5>
-                  <p className="card-text">
+            <Col key={comm.ID} md={4} className="mb-3">
+              <Card>
+                <Card.Body>
+                  <Card.Title>{comm.Name}</Card.Title>
+                  <Card.Text>
                     Population: {comm.Population} <br />
                     Culture: {comm.Culture}
-                  </p>
+                  </Card.Text>
 
+                  {/* ボタングループ（縦並び）を中央寄せ */}
                   <div className="d-flex justify-content-center">
                     <ButtonGroup
                       vertical
@@ -103,13 +106,11 @@ export default function HomePage() {
                         Simulate
                       </Button>
 
-                      {/* 詳細ページへのリンク */}
-                      <Button
-                        variant="secondary"
-                        href={`/community/${comm.ID}`}
-                      >
-                        Details
-                      </Button>
+                      {/* 詳細ページへのリンク（Next.js Link を as で指定） */}
+                      <Link href={`/community/${comm.ID}`}>
+                        {/* as を使わず、Button をそのまま入れる */}
+                        <Button variant="secondary">Details</Button>
+                      </Link>
 
                       {/* 削除 */}
                       <Button
@@ -120,11 +121,11 @@ export default function HomePage() {
                       </Button>
                     </ButtonGroup>
                   </div>
-                </div>
-              </div>
-            </div>
+                </Card.Body>
+              </Card>
+            </Col>
           ))}
-        </div>
+        </Row>
       )}
     </main>
   );
