@@ -2,17 +2,12 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/rayfiyo/zousui/backend/domain"
+	"github.com/rayfiyo/zousui/backend/utils"
 )
-
-// CommunityRepository: コミュニティに関するリポジトリインタフェース(読み書き)
-type CommunityRepository interface {
-	GetByID(ctx context.Context, id string) (*domain.Community, error)
-	Save(ctx context.Context, community *domain.Community) error
-	GetAll(ctx context.Context) ([]*domain.Community, error)
-}
 
 // AgentRepository: エージェントに関するリポジトリインタフェース(読み書き)
 type AgentRepository interface {
@@ -20,6 +15,13 @@ type AgentRepository interface {
 	Save(ctx context.Context, agent *domain.Agent) error
 	GetAll(ctx context.Context) ([]*domain.Agent, error)
 	GetAgentsByCommunity(ctx context.Context, communityID string) ([]*domain.Agent, error)
+}
+
+// CommunityRepository: コミュニティに関するリポジトリインタフェース(読み書き)
+type CommunityRepository interface {
+	GetByID(ctx context.Context, id string) (*domain.Community, error)
+	Save(ctx context.Context, community *domain.Community) error
+	GetAll(ctx context.Context) ([]*domain.Community, error)
 }
 
 // LLMGateway: LLMに問い合わせるためのインタフェース
@@ -62,22 +64,34 @@ func (uc *SimulateCultureEvolutionUsecase) Execute(ctx context.Context, communit
 	}
 
 	// 簡単な例: エージェントの情報からプロンプトを組み立てる
-	prompt := fmt.Sprintf("コミュニティ名: %s\n人口: %d\n現文化: %s\n---\n",
-		comm.Name, comm.Population, comm.Culture)
-
+	prompt := fmt.Sprintf(
+		"コミュニティ名: {{%s}}\n人口: {{%d}}\n現文化: {{%s}}\n%s\n---\n",
+		comm.Name, comm.Population, comm.Culture, utils.SpecifyingResponseFormat,
+	)
 	for _, agent := range agents {
-		prompt += fmt.Sprintf("エージェント: %s, 性格: %s\n", agent.Name, agent.Personality)
+		prompt += fmt.Sprintf(
+			"エージェント: %s, 性格: %s\n", agent.Name, agent.Personality,
+		)
 	}
-	prompt += "このコミュニティの文化を新しい方向に進化させるアイデアを提案してください。"
 
 	// LLMに問い合わせ
-	newCulture, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt)
+	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt)
 	if err != nil {
 		return fmt.Errorf("failed to generate culture update: %w", err)
 	}
 
+	// JSONパース
+	var result domain.CultureUpdateResponse
+	if err := json.Unmarshal([]byte(llmResp), &result); err != nil {
+		// ここで 単純に文章全体を newCulture に入れる処理もアリ
+		// result.NewCulture = llmResp
+		// result.PopulationChange = 0
+		return fmt.Errorf("invalid JSON from LLM (failed to parse LLM JSON): %w", err)
+	}
+
 	// ドメインモデルを使って更新
-	comm.UpdateCulture(newCulture)
+	comm.UpdateCulture(result.NewCulture)
+	comm.Population += result.PopulationChange
 
 	// コミュニティを保存
 	if err := uc.communityRepo.Save(ctx, comm); err != nil {
