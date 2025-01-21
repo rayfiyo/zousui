@@ -38,5 +38,16 @@ func (m *MemoryCommunityRepo) Save(ctx context.Context, c *domain.Community) err
 	return nil
 }
 
+// 全コミュニティをリストとして取得
+func (m *MemoryCommunityRepo) GetAll(ctx context.Context) ([]*domain.Community, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	result := make([]*domain.Community, 0, len(m.communities))
+	for _, comm := range m.communities {
+		result = append(result, comm)
+	}
+	return result, nil
+}
+
 // インタフェース実装をチェック
 var _ usecase.CommunityRepository = (*MemoryCommunityRepo)(nil)
