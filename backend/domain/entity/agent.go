@@ -1,5 +1,9 @@
 package entity
 
+import (
+	"net/http"
+)
+
 // Agent: LLMやAIキャラクター（コミュニティを担当するエージェント）
 type Agent struct {
 	ID          string
@@ -12,4 +16,10 @@ type Agent struct {
 type CultureUpdateResponse struct {
 	NewCulture       string `json:"newCulture"`
 	PopulationChange int    `json:"populationChange"`
+}
+
+// GeminiLLMGateway: GeminiLLM APIを利用するためのゲートウェイ
+type GeminiLLMGateway struct {
+	apiKey     string
+	httpClient *http.Client
 }
