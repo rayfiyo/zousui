@@ -20,7 +20,6 @@ func main() {
 	agentRepo := repository.NewMemoryAgentRepo()
 
 	// LLMゲートウェイ
-	// llmGw := &gateway.MockLLMGatewayJSON{} // モック版
 	if err := config.LoadEnv(); err != nil {
 		log.Fatalf("failed to load env: %v", err)
 	}
