@@ -20,6 +20,6 @@ type CultureUpdateResponse struct {
 
 // GeminiLLMGateway: GeminiLLM APIを利用するためのゲートウェイ
 type GeminiLLMGateway struct {
-	client *genai.Client
-	model  *genai.GenerativeModel
+	Client *genai.Client
+	Model  *genai.GenerativeModel
 }
