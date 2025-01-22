@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/rayfiyo/zousui/backend/domain/entity"
 	"github.com/rayfiyo/zousui/backend/infrastructure/repository"
 	"github.com/rayfiyo/zousui/backend/interface/controller"
 	"github.com/rayfiyo/zousui/backend/interface/gateway"
+	"github.com/rayfiyo/zousui/backend/interface/router"
 	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
@@ -23,23 +22,19 @@ func main() {
 
 	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
+	diploUC := usecase.NewDiplomacyUsecase(communityRepo, llmGw)
 	communityUC := usecase.NewCommunityUsecase(communityRepo)
 
 	// コントローラ
-	simCtrl := controller.NewSimulateController(simulateUC)
 	commCtrl := controller.NewCommunityController(communityUC)
+	diploCtrl := controller.NewDiplomacyController(diploUC)
+	simCtrl := controller.NewSimulateController(simulateUC)
 
 	// データ初期化
 	seedData(communityRepo, agentRepo)
 
-	// Gin
-	r := gin.Default()
-	r.Use(cors.Default())
-
-	// コミュニティ一覧取得
-	r.GET("/communities", commCtrl.GetCommunities)
-	// シミュレーション実行
-	r.POST("/simulate/:communityID", simCtrl.Simulate)
+	// ルーティング
+	r := router.NewRouter(commCtrl, diploCtrl, simCtrl)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")
