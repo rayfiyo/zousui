@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"net/http"
+	"github.com/google/generative-ai-go/genai"
 )
 
 // Agent: LLMやAIキャラクター（コミュニティを担当するエージェント）
@@ -20,6 +20,6 @@ type CultureUpdateResponse struct {
 
 // GeminiLLMGateway: GeminiLLM APIを利用するためのゲートウェイ
 type GeminiLLMGateway struct {
-	apiKey     string
-	httpClient *http.Client
+	client *genai.Client
+	model  *genai.GenerativeModel
 }
