@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/rayfiyo/zousui/backend/domain/entity"
 	"github.com/rayfiyo/zousui/backend/infrastructure/repository"
@@ -13,15 +14,22 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	// リポジトリ初期化
 	communityRepo := repository.NewMemoryCommunityRepo()
 	agentRepo := repository.NewMemoryAgentRepo()
 
-	// LLMゲートウェイ（モック）
-	llmGw := &gateway.MockLLMGatewayJSON{}
+	// LLMゲートウェイ
+	// llmGw := &gateway.MockLLMGatewayJSON{} // モック版
+	llmGw, err := gateway.NewGeminiLLMGateway(ctx)
+	if err != nil {
+		log.Fatalf("failed to create gemini gateway: %v", err)
+	}
 
 	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
+
 	diploUC := usecase.NewDiplomacyUsecase(communityRepo, llmGw)
 	communityUC := usecase.NewCommunityUsecase(communityRepo)
 
