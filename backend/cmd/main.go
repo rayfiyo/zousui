@@ -39,12 +39,13 @@ func main() {
 	commCtrl := controller.NewCommunityController(communityUC)
 	diploCtrl := controller.NewDiplomacyController(diploUC)
 	simCtrl := controller.NewSimulateController(simulateUC)
+	imageCtrl := controller.NewImageController(*communityUC)
 
 	// データ初期化
 	seedData(communityRepo, agentRepo)
 
 	// ルーティング
-	r := router.NewRouter(commCtrl, diploCtrl, simCtrl)
+	r := router.NewRouter(commCtrl, diploCtrl, simCtrl, imageCtrl)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")

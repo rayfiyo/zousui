@@ -11,6 +11,7 @@ func NewRouter(
 	commCtrl *controller.CommunityController,
 	diploCtrl *controller.DiplomacyController,
 	simCtrl *controller.SimulateController,
+	imageCtrl *controller.ImageController,
 ) *gin.Engine {
 	// Gin
 	r := gin.Default()
@@ -27,6 +28,9 @@ func NewRouter(
 
 	// シミュレーション実行
 	r.POST("/simulate/:communityID", simCtrl.Simulate)
+
+	// 画像生成API
+	r.POST("/communities/:communityID/generateImage", imageCtrl.GenerateImage)
 
 	return r
 }

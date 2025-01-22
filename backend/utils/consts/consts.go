@@ -7,4 +7,6 @@ const (
     "populationChange": 0
 }"`
 	GeminiModel string = "gemini-2.0-flash-exp"
+	DALLEModel  string = "dall-e-3"
+	ImageSize   string = "1024x1024"
 )
