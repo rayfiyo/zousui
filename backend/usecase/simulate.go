@@ -7,7 +7,6 @@ import (
 
 	"github.com/rayfiyo/zousui/backend/domain/entity"
 	"github.com/rayfiyo/zousui/backend/domain/repository"
-	"github.com/rayfiyo/zousui/backend/utils"
 )
 
 // SimulateCultureEvolutionUsecase: 文化を進化(変化)させるシミュレーション例
@@ -46,8 +45,8 @@ func (uc *SimulateCultureEvolutionUsecase) Execute(ctx context.Context, communit
 
 	// 簡単な例: エージェントの情報からプロンプトを組み立てる
 	prompt := fmt.Sprintf(
-		"コミュニティ名: {{%s}}\n人口: {{%d}}\n現文化: {{%s}}\n%s\n---\n",
-		comm.Name, comm.Population, comm.Culture, utils.SpecifyingResponseFormat,
+		"コミュニティ名: {{%s}}\n人口: {{%d}}\n現文化: {{%s}}\n---\n",
+		comm.Name, comm.Population, comm.Culture,
 	)
 	for _, agent := range agents {
 		prompt += fmt.Sprintf(

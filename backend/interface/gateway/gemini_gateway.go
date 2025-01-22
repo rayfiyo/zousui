@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/rayfiyo/zousui/backend/domain/repository"
-	"github.com/rayfiyo/zousui/backend/utils"
 	"github.com/rayfiyo/zousui/backend/utils/config"
+	"github.com/rayfiyo/zousui/backend/utils/consts"
 	"google.golang.org/api/option"
 )
 
@@ -33,7 +33,7 @@ func NewGeminiLLMGateway(ctx context.Context) (*GeminiLLMGateway, error) {
 
 	model.SystemInstruction = &genai.Content{
 		Parts: []genai.Part{
-			genai.Text(utils.SpecifyingResponseFormat),
+			genai.Text(consts.SpecifyingResponseFormat),
 		},
 	}
 
