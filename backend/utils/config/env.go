@@ -7,7 +7,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var GeminiAPIKEY string
+var (
+	GeminiAPIKEY string
+	OpenAIAPIKEY string
+)
 
 func LoadEnv() error {
 	if err := godotenv.Load(); err != nil {
@@ -16,6 +19,7 @@ func LoadEnv() error {
 	}
 
 	GeminiAPIKEY = os.Getenv("GEMINI_API_KEY")
+	OpenAIAPIKEY = os.Getenv("OPENAI_API_KEY")
 
 	return nil
 }
