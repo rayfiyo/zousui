@@ -28,8 +28,7 @@ func NewGeminiLLMGateway(ctx context.Context) (*GeminiLLMGateway, error) {
 	}
 	defer client.Close()
 
-	// [TODO]
-	model := client.GenerativeModel("gemini")
+	model := client.GenerativeModel(consts.GeminiModel)
 
 	model.SystemInstruction = &genai.Content{
 		Parts: []genai.Part{
