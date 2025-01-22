@@ -75,7 +75,6 @@ func (ic *ImageController) GenerateImage(c *gin.Context) {
 	}
 
 	// 6. OpenAIの画像生成APIへリクエスト
-	url := "https://api.openai.com/v1/images/generations"
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model":  consts.DALLEModel,
 		"prompt": prompt,
@@ -87,7 +86,7 @@ func (ic *ImageController) GenerateImage(c *gin.Context) {
 		return
 	}
 
-	httpReq, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, url, bytes.NewReader(requestBody))
+	httpReq, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, consts.DALLEEndpoint, bytes.NewReader(requestBody))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

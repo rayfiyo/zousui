@@ -6,7 +6,8 @@ const (
     "newCulture": "string",
     "populationChange": 0
 }"`
-	GeminiModel string = "gemini-2.0-flash-exp"
-	DALLEModel  string = "dall-e-3"
-	ImageSize   string = "1024x1024"
+	GeminiModel   string = "gemini-2.0-flash-exp"
+	DALLEModel    string = "dall-e-3"
+	ImageSize     string = "1024x1024"
+	DALLEEndpoint string = "https://api.openai.com/v1/images/generations"
 )
