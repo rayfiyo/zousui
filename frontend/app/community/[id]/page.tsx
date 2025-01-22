@@ -2,7 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Card, Spinner, Container, Row, Col } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Spinner,
+  Container,
+  Row,
+  Col,
+  Alert,
+} from "react-bootstrap";
 
 type Community = {
   ID: string;
@@ -20,6 +28,11 @@ export default function CommunityDetailPage() {
   const [community, setCommunity] = useState<Community | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // 画像生成関連の state
+  const [imageSrc, setImageSrc] = useState<string>("");
+  const [imageError, setImageError] = useState<string>("");
+
+  // ====== Fetch Community ====== //
   async function fetchCommunity() {
     try {
       setLoading(true);
@@ -38,12 +51,7 @@ export default function CommunityDetailPage() {
     }
   }
 
-  // 更新機能（サンプル）
-  async function handleEdit() {
-    alert("Edit functionality is not implemented yet.");
-  }
-
-  // シミュレーション
+  // ====== Simulate ====== //
   async function handleSimulate() {
     if (!community) return;
     try {
@@ -63,6 +71,50 @@ export default function CommunityDetailPage() {
     }
   }
 
+  // ====== Edit (stub) ======
+  async function handleEdit() {
+    alert("Edit functionality is not implemented yet.");
+  }
+
+  // ====== Generate Image ======
+  async function handleGenerateImage() {
+    if (!community) return;
+
+    // 一度リセット
+    setImageSrc("");
+    setImageError("");
+
+    try {
+      setLoading(true);
+      // 例: "POST /communities/:communityID/generateImage"
+      const url = `http://localhost:8080/communities/${community.ID}/generateImage`;
+
+      // もし style などを追加したい場合は body JSON を入れる
+      // const body = JSON.stringify({ style: "fantasy" });
+      // const headers = { "Content-Type": "application/json" };
+
+      const res = await fetch(url, {
+        method: "POST",
+        // headers,
+        // body,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Image generation request failed: ${res.statusText}`);
+      }
+
+      // 画像は blob で受け取る
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      setImageSrc(objectUrl);
+    } catch (err: any) {
+      console.error("Error generating image:", err);
+      setImageError(err.message || "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     if (communityID) {
       fetchCommunity();
@@ -70,7 +122,7 @@ export default function CommunityDetailPage() {
   }, [communityID]);
 
   // 読み込み中にスピナーを表示
-  if (loading) {
+  if (loading && !community) {
     return (
       <div className="text-center mt-5">
         <Spinner animation="border" role="status">
@@ -108,6 +160,38 @@ export default function CommunityDetailPage() {
                   Back
                 </Button>
               </div>
+
+              {/* Generate Image Section */}
+              <div className="mt-4">
+                <Button variant="success" onClick={handleGenerateImage}>
+                  Generate Image
+                </Button>
+              </div>
+
+              {loading && community && (
+                <div className="mt-3 text-center">
+                  <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Generating image...</span>
+                  </Spinner>
+                </div>
+              )}
+
+              {imageError && (
+                <Alert variant="danger" className="mt-3">
+                  Error: {imageError}
+                </Alert>
+              )}
+
+              {imageSrc && (
+                <div className="mt-3">
+                  <h5>Generated Image:</h5>
+                  <img
+                    src={imageSrc}
+                    alt="Generated"
+                    style={{ maxWidth: "100%" }}
+                  />
+                </div>
+              )}
             </Card.Body>
           </Card>
         </Col>
