@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	"github.com/rayfiyo/zousui/backend/domain/repository"
@@ -12,8 +13,8 @@ import (
 )
 
 type GeminiLLMGateway struct {
-	client *genai.Client
-	model  *genai.GenerativeModel
+	Client *genai.Client
+	Model  *genai.GenerativeModel
 }
 
 // NewGeminiLLMGateway: コンストラクタ
@@ -26,7 +27,9 @@ func NewGeminiLLMGateway(ctx context.Context) (*GeminiLLMGateway, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gemini client: %w", err)
 	}
-	defer client.Close()
+	if client == nil {
+		return nil, fmt.Errorf("gemini client is nil")
+	}
 
 	model := client.GenerativeModel(consts.GeminiModel)
 
@@ -37,22 +40,27 @@ func NewGeminiLLMGateway(ctx context.Context) (*GeminiLLMGateway, error) {
 	}
 
 	return &GeminiLLMGateway{
-		client: client,
-		model:  model,
+		Client: client,
+		Model:  model,
 	}, nil
 }
 
 // GenerateCultureUpdate: LLMGatewayインタフェース
 // ここではストリーミングなしで結果をまとめて取得する例
 func (g *GeminiLLMGateway) GenerateCultureUpdate(ctx context.Context, prompt string) (string, error) {
-	resp, err := g.model.GenerateContent(ctx, genai.Text(prompt))
+	respRaw, err := g.Model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
 		return "", fmt.Errorf("failed to generate content: %w", err)
 	}
 
-	//  [TODO] JSON にパースして返す
+	// 装飾の削除
+	resp := strings.ReplaceAll(
+		fmt.Sprintln(respRaw.Candidates[0].Content.Parts), "```", "")
+	resp = strings.ReplaceAll(resp, "json", "")
+	resp = strings.ReplaceAll(resp, "[", "")
+	resp = strings.ReplaceAll(resp, "]", "")
 
-	return fmt.Sprintln(resp.Candidates[0].Content.Parts), nil
+	return resp, nil
 }
 
 // インタフェースが正しく実装されているかコンパイル時チェック

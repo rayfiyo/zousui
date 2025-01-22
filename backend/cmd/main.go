@@ -23,11 +23,11 @@ func main() {
 	if err := config.LoadEnv(); err != nil {
 		log.Fatalf("failed to load env: %v", err)
 	}
-	ctx := context.Background()
-	llmGw, err := gateway.NewGeminiLLMGateway(ctx)
+	llmGw, err := gateway.NewGeminiLLMGateway(context.Background())
 	if err != nil {
 		log.Fatalf("failed to create gemini gateway: %v", err)
 	}
+	defer llmGw.Client.Close()
 
 	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
