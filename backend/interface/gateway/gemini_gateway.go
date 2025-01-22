@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/generative-ai-go/genai"
-	// "github.com/rayfiyo/zousui/backend/usecase"
+	"github.com/rayfiyo/zousui/backend/domain/repository"
 	"github.com/rayfiyo/zousui/backend/utils"
 	"github.com/rayfiyo/zousui/backend/utils/config"
 	"google.golang.org/api/option"
@@ -56,4 +56,5 @@ func (g *GeminiLLMGateway) GenerateCultureUpdate(ctx context.Context, prompt str
 	return fmt.Sprintln(resp.Candidates[0].Content.Parts), nil
 }
 
-// var _ usecase.LLMGateway = (*GeminiLLMGateway)(nil)
+// インタフェースが正しく実装されているかコンパイル時チェック
+var _ repository.LLMGateway = (*GeminiLLMGateway)(nil)
