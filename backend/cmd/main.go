@@ -11,17 +11,20 @@ import (
 	"github.com/rayfiyo/zousui/backend/interface/gateway"
 	"github.com/rayfiyo/zousui/backend/interface/router"
 	"github.com/rayfiyo/zousui/backend/usecase"
+	"github.com/rayfiyo/zousui/backend/utils/config"
 )
 
 func main() {
-	ctx := context.Background()
-
 	// リポジトリ初期化
 	communityRepo := repository.NewMemoryCommunityRepo()
 	agentRepo := repository.NewMemoryAgentRepo()
 
 	// LLMゲートウェイ
 	// llmGw := &gateway.MockLLMGatewayJSON{} // モック版
+	if err := config.LoadEnv(); err != nil {
+		log.Fatalf("failed to load env: %v", err)
+	}
+	ctx := context.Background()
 	llmGw, err := gateway.NewGeminiLLMGateway(ctx)
 	if err != nil {
 		log.Fatalf("failed to create gemini gateway: %v", err)
