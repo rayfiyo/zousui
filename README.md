@@ -3,6 +3,15 @@
 - 文明進化シミュレーター
 - Civilization Evolution Simulator
 
+## .env
+
+`backend/.env`
+
+```
+GEMINI_API_KEY=
+OPENAI_API_KEY=
+```
+
 ## tree
 
 ### backend
@@ -11,10 +20,9 @@
 tree backend/
 ```
 
-```bash
+```text
 backend/
 ├── cmd
-│   ├── cmd
 │   └── main.go
 ├── domain
 │   ├── entity
@@ -32,9 +40,11 @@ backend/
 │   ├── controller
 │   │   ├── community_controller.go
 │   │   ├── diplomacy_controller.go
+│   │   ├── image_controller.go
 │   │   └── simulate_controller.go
 │   ├── gateway
-│   │   └── llm_gateway.go
+│   │   ├── gemini_gateway.go
+│   │   └── moc_gateway.go
 │   └── router
 │       └── router.go
 ├── usecase
@@ -42,7 +52,10 @@ backend/
 │   ├── diplomacy.go
 │   └── simulate.go
 └── utils
-    └── const.go
+    ├── config
+    │   └── env.go
+    └── consts
+        └── consts.go
 ```
 
 ### frontend
@@ -51,10 +64,18 @@ backend/
 tree -I "node_modules" frontend/
 ```
 
-```bash
+```text
 frontend/
 ├── app
+│   ├── community
+│   │   ├── [id]
+│   │   │   └── page.tsx
+│   │   └── new
+│   │       └── page.tsx
+│   ├── diplomacy
+│   │   └── page.tsx
 │   ├── layout.tsx
+│   ├── NavBar.tsx
 │   └── page.tsx
 ├── eslint.config.mjs
 ├── next.config.ts
