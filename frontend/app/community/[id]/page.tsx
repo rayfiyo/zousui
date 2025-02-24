@@ -71,6 +71,27 @@ export default function CommunityDetailPage() {
     }
   }
 
+  // ====== Interference Simulation ====== //
+  async function handleInterference() {
+    if (!community) return;
+    try {
+      const res = await fetch(
+        `http://localhost:8080/simulate/interference/${community.ID}`,
+        {
+          method: "POST",
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Interference simulation failed.");
+      }
+      alert("Interference simulation succeeded.");
+      fetchCommunity(); // 最新データを再取得
+    } catch (err) {
+      console.error(err);
+      alert("Error occurred during interference simulation.");
+    }
+  }
+
   // ====== Edit (stub) ======
   async function handleEdit() {
     alert("Edit functionality is not implemented yet.");
@@ -158,6 +179,9 @@ export default function CommunityDetailPage() {
                 </Button>
                 <Button variant="light" onClick={() => router.push("/")}>
                   Back
+                </Button>
+                <Button variant="warning" onClick={handleInterference}>
+                  Interference
                 </Button>
               </div>
 
