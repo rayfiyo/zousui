@@ -51,6 +51,31 @@ export default function CommunityDetailPage() {
     }
   }
 
+  // ====== Delete ====== //
+  async function handleDelete() {
+    if (!community) return;
+    if (!confirm("Are you sure you want to delete this community?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/communities/${community.ID}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!res.ok) {
+        alert(`Delete failed. Status: ${res.status}`);
+        return;
+      }
+      alert("Community deleted.");
+      router.push("/"); // 一覧に戻る
+    } catch (err) {
+      console.error("Error deleting community:", err);
+    }
+  }
+
   // ====== Simulate ====== //
   async function handleSimulate() {
     if (!community) return;
@@ -161,34 +186,38 @@ export default function CommunityDetailPage() {
     <Container>
       <Row className="justify-content-center">
         <Col md={8}>
-          <h2 className="my-4">Community Detail</h2>
+          <h2 className="my-4 text-center">Community Detail</h2>
           <Card>
             <Card.Body>
-              <Card.Title>{community.Name}</Card.Title>
+              <Card.Title className="text-center">{community.Name}</Card.Title>
               <Card.Text>ID: {community.ID}</Card.Text>
               <Card.Text>Description: {community.Description}</Card.Text>
               <Card.Text>Population: {community.Population}</Card.Text>
-              <Card.Text>Culture: {community.Culture}</Card.Text>
+              <Card.Title className="text-center"> Culture </Card.Title>
+              <Card.Text> {community.Culture}</Card.Text>
 
-              <div className="d-flex gap-2 mt-4">
+              <div className="d-flex flex-wrap gap-2 mt-4 justify-content-center">
                 <Button variant="primary" onClick={handleSimulate}>
-                  Simulate
-                </Button>
-                <Button variant="secondary" onClick={handleEdit}>
-                  Edit (TODO)
-                </Button>
-                <Button variant="light" onClick={() => router.push("/")}>
-                  Back
+                  シュミレート
                 </Button>
                 <Button variant="warning" onClick={handleInterference}>
-                  Interference
+                  他国との干渉
+                </Button>
+
+                <Button variant="success" onClick={handleGenerateImage}>
+                  画像生成
                 </Button>
               </div>
 
-              {/* Generate Image Section */}
-              <div className="mt-4">
-                <Button variant="success" onClick={handleGenerateImage}>
-                  Generate Image
+              <div className="d-flex flex-wrap gap-2 mt-4 justify-content-center">
+                <Button variant="danger" onClick={handleDelete}>
+                  削除
+                </Button>
+                <Button variant="light" onClick={() => router.push("/")}>
+                  一覧に戻る
+                </Button>
+                <Button variant="secondary" onClick={handleEdit}>
+                  編集
                 </Button>
               </div>
 

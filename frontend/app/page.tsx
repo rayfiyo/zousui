@@ -75,14 +75,14 @@ export default function HomePage() {
 
   return (
     <main>
-      <h1 className="mb-4">Zousui Communities</h1>
+      <h1 className="my-4 text-center">Zousui Communities</h1>
 
       {communities.length === 0 ? (
         <p>No communities found.</p>
       ) : (
         <Row>
           {communities.map((comm) => (
-            <Col key={comm.ID} md={4} className="mb-3">
+            <Col key={comm.ID} xs={12} className="mb-3">
               <Card>
                 <Card.Body>
                   <Card.Title>{comm.Name}</Card.Title>
@@ -90,26 +90,20 @@ export default function HomePage() {
                     Population: {comm.Population} <br />
                     Culture: {comm.Culture}
                   </Card.Text>
-
                   {/* ボタングループ（縦並び）を中央寄せ */}
                   <div className="d-flex justify-content-center">
-                    <ButtonGroup
-                      vertical
-                      className="w-100"
-                      style={{ maxWidth: "300px" }}
-                    >
-                      {/* シミュレーション */}
+                    {/* シミュレーション */}
+                    <div className="d-flex flex-wrap gap-2">
                       <Button
                         variant="primary"
                         onClick={() => handleSimulate(comm.ID)}
                       >
-                        Simulate
+                        シュミレート
                       </Button>
 
                       {/* 詳細ページへのリンク（Next.js Link を as で指定） */}
                       <Link href={`/community/${comm.ID}`}>
-                        {/* as を使わず、Button をそのまま入れる */}
-                        <Button variant="secondary">Details</Button>
+                        <Button variant="secondary">詳細</Button>
                       </Link>
 
                       {/* 削除 */}
@@ -117,9 +111,9 @@ export default function HomePage() {
                         variant="danger"
                         onClick={() => handleDelete(comm.ID)}
                       >
-                        Delete
+                        削除
                       </Button>
-                    </ButtonGroup>
+                    </div>
                   </div>
                 </Card.Body>
               </Card>
