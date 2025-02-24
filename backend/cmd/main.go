@@ -19,21 +19,30 @@ func main() {
 	communityRepo := repository.NewMemoryCommunityRepo()
 	agentRepo := repository.NewMemoryAgentRepo()
 
-	// LLMゲートウェイ
+	// 環境変数ロード
 	if err := config.LoadEnv(); err != nil {
 		log.Fatalf("failed to load env: %v", err)
 	}
+
+	// Gemini ゲートウェイ
 	llmGw, err := gateway.NewGeminiLLMGateway(context.Background())
 	if err != nil {
 		log.Fatalf("failed to create gemini gateway: %v", err)
 	}
 	defer llmGw.Client.Close()
 
+	// Mockゲートウェイ
+	mockGw := &gateway.MockLLMGatewayJSON{}
+	// MultiLLMGateway: 複数のLLMを束ねる集約ゲートウェイ
+	multiGw := gateway.NewMultiLLMGateway(llmGw, mockGw)
+
 	// ユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
-
 	diploUC := usecase.NewDiplomacyUsecase(communityRepo, llmGw)
 	communityUC := usecase.NewCommunityUsecase(communityRepo)
+
+	// 干渉用ユースケース: 集約ゲートウェイを渡す
+	interferenceUC := usecase.NewSimulateInterferenceUsecase(communityRepo, agentRepo, multiGw)
 
 	// コントローラ
 	commCtrl := controller.NewCommunityController(communityUC)
@@ -41,11 +50,14 @@ func main() {
 	simCtrl := controller.NewSimulateController(simulateUC)
 	imageCtrl := controller.NewImageController(*communityUC)
 
+	// 干渉コントローラ
+	interferenceCtrl := controller.NewInterferenceController(interferenceUC)
+
 	// データ初期化
 	seedData(communityRepo, agentRepo)
 
 	// ルーティング
-	r := router.NewRouter(commCtrl, diploCtrl, simCtrl, imageCtrl)
+	r := router.NewRouter(commCtrl, diploCtrl, simCtrl, imageCtrl, interferenceCtrl)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")

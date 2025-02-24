@@ -12,6 +12,7 @@ func NewRouter(
 	diploCtrl *controller.DiplomacyController,
 	simCtrl *controller.SimulateController,
 	imageCtrl *controller.ImageController,
+	interferenceCtrl *controller.InterferenceController,
 ) *gin.Engine {
 	// Gin
 	r := gin.Default()
@@ -31,6 +32,9 @@ func NewRouter(
 
 	// 画像生成API
 	r.POST("/communities/:communityID/generateImage", imageCtrl.GenerateImage)
+
+	// 干渉シミュレーション
+	r.POST("/simulate/interference/:communityID", interferenceCtrl.SimulateInterference)
 
 	return r
 }
