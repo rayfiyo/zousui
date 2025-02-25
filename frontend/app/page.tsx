@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button, ButtonGroup, Row, Col, Card } from "react-bootstrap";
+import { Button, Row, Col, Card } from "react-bootstrap";
 
 type Community = {
   ID: string;
