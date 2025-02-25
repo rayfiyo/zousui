@@ -190,7 +190,7 @@ export default function CommunityDetailPage() {
   return (
     <Container>
       <Row className="justify-content-center">
-        <Col md={8}>
+        <Col xs={12}>
           <h2 className="my-4 text-center">Community Detail</h2>
           <Card>
             <Card.Body>
