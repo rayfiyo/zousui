@@ -10,7 +10,7 @@ export default function NavBar() {
       <Container>
         {/* ロゴ */}
         <Navbar.Brand as={Link} href="/">
-          Zousui
+          zousui
         </Navbar.Brand>
 
         {/* ハンバーガーメニュー */}
