@@ -241,7 +241,7 @@ export default function CommunityDetailPage() {
               )}
 
               {imageSrc && (
-                <div className="mt-3">
+                <div className="mt-3 text-center">
                   <h5>Generated Image:</h5>
                   <Image
                     src={imageSrc}
