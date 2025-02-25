@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Button,
   Card,
@@ -33,7 +34,7 @@ export default function CommunityDetailPage() {
   const [imageError, setImageError] = useState<string>("");
 
   // ====== Fetch Community ====== //
-  async function fetchCommunity() {
+  const fetchCommunity = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(
@@ -49,7 +50,7 @@ export default function CommunityDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [communityID]);
 
   // ====== Delete ====== //
   async function handleDelete() {
@@ -153,9 +154,13 @@ export default function CommunityDetailPage() {
       const blob = await res.blob();
       const objectUrl = URL.createObjectURL(blob);
       setImageSrc(objectUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setImageError(err.message);
+      } else {
+        setImageError("Unknown error");
+      }
       console.error("Error generating image:", err);
-      setImageError(err.message || "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -165,7 +170,7 @@ export default function CommunityDetailPage() {
     if (communityID) {
       fetchCommunity();
     }
-  }, [communityID]);
+  }, [fetchCommunity]);
 
   // 読み込み中にスピナーを表示
   if (loading && !community) {
@@ -185,7 +190,7 @@ export default function CommunityDetailPage() {
   return (
     <Container>
       <Row className="justify-content-center">
-        <Col md={8}>
+        <Col xs={12}>
           <h2 className="my-4 text-center">Community Detail</h2>
           <Card>
             <Card.Body>
@@ -236,9 +241,9 @@ export default function CommunityDetailPage() {
               )}
 
               {imageSrc && (
-                <div className="mt-3">
+                <div className="mt-3 text-center">
                   <h5>Generated Image:</h5>
-                  <img
+                  <Image
                     src={imageSrc}
                     alt="Generated"
                     style={{ maxWidth: "100%" }}

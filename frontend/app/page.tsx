@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button, ButtonGroup, Row, Col, Card } from "react-bootstrap";
+import { Button, Row, Col, Card } from "react-bootstrap";
 
 type Community = {
   ID: string;
@@ -75,7 +75,7 @@ export default function HomePage() {
 
   return (
     <main>
-      <h1 className="my-4 text-center">Zousui Communities</h1>
+      <h1 className="my-4 text-center">zousui Communities</h1>
 
       {communities.length === 0 ? (
         <p>No communities found.</p>

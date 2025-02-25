@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import NavBar from "./NavBar";
 
 export const metadata = {
-  title: "Zousui Communities",
+  title: "zousui Communities",
   description: "文明進化シミュレーター / Civilization Evolution Simulator",
 };
 
