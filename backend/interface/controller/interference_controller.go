@@ -1,36 +1,48 @@
 package controller
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rayfiyo/zousui/backend/usecase"
 )
 
-// InterferenceController: 複数LLM干渉シミュレーション用のコントローラ
+// コミュニティ同士の干渉を行うコントローラ
 type InterferenceController struct {
-	interferenceUC *usecase.SimulateInterferenceUsecase
+	interferenceUC *usecase.SimulateInterferenceBetweenCommunitiesUsecase
 }
 
-// NewInterferenceController: コンストラクタ
-func NewInterferenceController(iuc *usecase.SimulateInterferenceUsecase) *InterferenceController {
-	return &InterferenceController{interferenceUC: iuc}
+// コンストラクタ
+func NewInterferenceController(uc *usecase.SimulateInterferenceBetweenCommunitiesUsecase) *InterferenceController {
+	return &InterferenceController{interferenceUC: uc}
 }
 
-// SimulateInterference: POST /simulate/interference/:communityID
-func (ic *InterferenceController) SimulateInterference(c *gin.Context) {
-	communityID := c.Param("communityID")
-	if communityID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid communityID"})
+// POST /simulate/interference?commA=xxx&commB=yyy
+func (ic *InterferenceController) SimulateInterferenceBetweenCommunities(c *gin.Context) {
+	commA := c.Query("commA")
+	commB := c.Query("commB")
+	if commA == "" || commB == "" {
+		c.JSON(http.StatusBadRequest,
+			gin.H{"error": "missing commA or commB parameter"})
+		return
+	}
+	if commA == commB {
+		c.JSON(http.StatusBadRequest,
+			gin.H{"error": "commA and commB must be different"})
 		return
 	}
 
-	err := ic.interferenceUC.Execute(context.Background(), communityID)
+	// Usecase実行
+	err := ic.interferenceUC.Execute(c, commA, commB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Interference simulation succeeded."})
+	// 成功応答
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Interference simulation done",
+		"commA":   commA,
+		"commB":   commB,
+	})
 }
