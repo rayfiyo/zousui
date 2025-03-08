@@ -98,3 +98,8 @@ frontend/
 │       └── page.tsx
 └── tsconfig.json
 ```
+
+## note
+
+- クリーンアーキテクチャ
+- MVS
