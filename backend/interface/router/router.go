@@ -33,8 +33,9 @@ func NewRouter(
 	// 画像生成API
 	r.POST("/communities/:communityID/generateImage", imageCtrl.GenerateImage)
 
-	// 干渉シミュレーション
-	r.POST("/simulate/interference/:communityID", interferenceCtrl.SimulateInterference)
+	// 干渉シミュレーション (コミュニティAとB)
+	r.POST("/simulate/interference",
+		interferenceCtrl.SimulateInterferenceBetweenCommunities)
 
 	return r
 }
