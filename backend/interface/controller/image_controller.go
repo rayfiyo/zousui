@@ -14,25 +14,29 @@ import (
 	"github.com/rayfiyo/zousui/backend/usecase"
 	"github.com/rayfiyo/zousui/backend/utils/config"
 	"github.com/rayfiyo/zousui/backend/utils/consts"
+	"go.uber.org/zap"
 )
 
-// ImageController: 文化(Culture)テキストを画像生成APIに渡して画像を返却するコントローラ
+// 文化(Culture)テキストを画像生成APIに渡して画像を返却するコントローラ
 type ImageController struct {
 	communityUC usecase.CommunityUsecase
 }
 
-func NewImageController(cu usecase.CommunityUsecase) *ImageController {
+func NewImageController(
+	cu usecase.CommunityUsecase,
+) *ImageController {
+	zap.L().Debug("Initializing ImageController")
 	return &ImageController{
 		communityUC: cu,
 	}
 }
 
-// GenerateImageRequest: リクエストボディ用の構造体（将来的な拡張を想定）
+// リクエストボディ用の構造体
 type GenerateImageRequest struct {
 	Style string `json:"style,omitempty"`
 }
 
-// imageResponse: OpenAIの画像生成APIレスポンス(簡易)
+// OpenAIの画像生成APIレスポンス
 type imageResponse struct {
 	Data []struct {
 		URL string `json:"url"`
@@ -40,41 +44,41 @@ type imageResponse struct {
 }
 
 // POST /communities/:communityID/generateImage
-func (ic *ImageController) GenerateImage(c *gin.Context) {
-	// 1. communityID を取得
-	communityID := c.Param("communityID")
+func (ic *ImageController) GenerateImage(
+	c *gin.Context,
+) {
+	logger := zap.L()
 
-	// 2. DBからコミュニティ情報を取得 (ユースケースを呼ぶ)
+	communityID := c.Param("communityID")
+	logger.Debug("GenerateImage called", zap.String("communityID", communityID))
+
 	comm, err := ic.communityUC.GetCommunityByID(c, communityID)
 	if err != nil || comm == nil {
+		logger.Warn("Community not found for image generation",
+			zap.String("communityID", communityID))
 		c.JSON(http.StatusNotFound, gin.H{"error": "community not found"})
 		return
 	}
 
-	// 3. bodyをパース(拡張用)。無ければ使わずにOK
 	var req GenerateImageRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		// body無しの場合は無視 or エラー
-		// c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		// return
+		logger.Debug("No request body for image generation or invalid JSON",
+			zap.Error(err))
 	}
 
-	// 4. 画像生成APIキーを取得
 	if config.OpenAIAPIKEY == "" {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "OPENAI_API_KEY environment variable is not set"})
+		logger.Error("OPENAI_API_KEY is not set")
+		c.JSON(http.StatusInternalServerError,
+			gin.H{"error": "OPENAI_API_KEY environment variable is not set"})
 		return
 	}
 
-	// 5. 生成用のプロンプトを組み立て
-	//    ここではコミュニティの Culture を使う例
-	//    例: "A beautiful digital art representing the culture: '～～'"
 	prompt := fmt.Sprintf("A digital art representing the culture: %q", comm.Culture)
 	if req.Style != "" {
-		// styleがあれば追加
 		prompt += fmt.Sprintf(", style: %s", req.Style)
 	}
+	logger.Debug("Image generation prompt", zap.String("prompt", prompt))
 
-	// 6. OpenAIの画像生成APIへリクエスト
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model":  consts.DALLEModel,
 		"prompt": prompt,
@@ -82,50 +86,58 @@ func (ic *ImageController) GenerateImage(c *gin.Context) {
 		"size":   consts.ImageSize,
 	})
 	if err != nil {
+		logger.Error("Failed to marshal image request", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	httpReq, err := http.NewRequestWithContext(c.Request.Context(), http.MethodPost, consts.DALLEEndpoint, bytes.NewReader(requestBody))
 	if err != nil {
+		logger.Error("Failed to create HTTP request for image generation",
+			zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+config.OpenAIAPIKEY)
 
-	// 7. リクエスト送信
 	client := &http.Client{}
 	resp, err := client.Do(httpReq)
 	if err != nil {
+		logger.Error("Failed to execute image generation HTTP request", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		// エラーボディを読み込んで返す
 		var errBody bytes.Buffer
 		errBody.ReadFrom(resp.Body)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("OpenAI error: %s", errBody.String())})
+		logger.Error("OpenAI returned non-OK status", zap.Int("status",
+			resp.StatusCode), zap.String("response", errBody.String()))
+		c.JSON(http.StatusInternalServerError,
+			gin.H{"error": fmt.Sprintf("OpenAI error: %s", errBody.String())})
 		return
 	}
 
 	var imageResp imageResponse
 	if err := json.NewDecoder(resp.Body).Decode(&imageResp); err != nil {
+		logger.Error("Failed to decode image response", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if len(imageResp.Data) == 0 {
+		logger.Error("No image data returned")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "no image data returned"})
 		return
 	}
 
-	// 8. 実際の画像URLからダウンロード
 	imageURL := imageResp.Data[0].URL
+	logger.Debug("Downloading image", zap.String("imageURL", imageURL))
 	imgResp, err := http.Get(imageURL)
 	if err != nil {
+		logger.Error("Failed to download image", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -139,18 +151,20 @@ func (ic *ImageController) GenerateImage(c *gin.Context) {
 	case "image/png":
 		decoded, err = png.Decode(imgResp.Body)
 	default:
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unsupported image format: " + contentType})
+		logger.Error("Unsupported image format", zap.String("contentType", contentType))
+		c.JSON(http.StatusInternalServerError,
+			gin.H{"error": "Unsupported image format: " + contentType})
 		return
 	}
 	if err != nil {
+		logger.Error("Failed to decode image", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// 9. リサイズ (幅300px, 高さアスペクト比維持)
 	resized := resize.Resize(300, 0, decoded, resize.Lanczos3)
+	logger.Info("Image processed", zap.String("communityID", communityID))
 
-	// 10. 画像としてレスポンス (mimeそのまま返す)
 	c.Writer.Header().Set("Content-Type", contentType)
 	switch contentType {
 	case "image/jpeg":

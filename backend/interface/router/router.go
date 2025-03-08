@@ -3,8 +3,8 @@ package router
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
 	"github.com/rayfiyo/zousui/backend/interface/controller"
+	"go.uber.org/zap"
 )
 
 func NewRouter(
@@ -14,6 +14,10 @@ func NewRouter(
 	imageCtrl *controller.ImageController,
 	interferenceCtrl *controller.InterferenceController,
 ) *gin.Engine {
+	logger := zap.L()
+
+	logger.Debug("Initializing router")
+
 	// Gin
 	r := gin.Default()
 	r.Use(cors.Default())
@@ -37,5 +41,6 @@ func NewRouter(
 	r.POST("/simulate/interference",
 		interferenceCtrl.SimulateInterferenceBetweenCommunities)
 
+	logger.Info("Router initialized")
 	return r
 }

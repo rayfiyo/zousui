@@ -8,6 +8,7 @@ require (
 	github.com/google/generative-ai-go v0.12.0
 	github.com/joho/godotenv v1.5.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	go.uber.org/zap v1.27.0
 	google.golang.org/api v0.211.0
 )
 
@@ -50,6 +51,7 @@ require (
 	go.opentelemetry.io/otel v1.34.0 // indirect
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/arch v0.12.0 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/net v0.35.0 // indirect

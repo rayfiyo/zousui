@@ -3,39 +3,41 @@ package gateway
 import (
 	"context"
 	"math/rand"
-	"time"
 
 	"github.com/rayfiyo/zousui/backend/domain/repository"
+	"go.uber.org/zap"
 )
 
-// MultiLLMGateway: 複数のLLMゲートウェイをまとめて扱うゲートウェイ
 type MultiLLMGateway struct {
 	subGateways []repository.LLMGateway
 }
 
-// NewMultiLLMGateway: コンストラクタ
-// サブゲートウェイを可変長で渡す
-func NewMultiLLMGateway(subGateways ...repository.LLMGateway) *MultiLLMGateway {
+func NewMultiLLMGateway(
+	subGateways ...repository.LLMGateway,
+) *MultiLLMGateway {
 	return &MultiLLMGateway{
 		subGateways: subGateways,
 	}
 }
 
-// GenerateCultureUpdate: 複数のLLMへの問い合わせ結果から「ランダムで1つ」選んで返す例
-func (m *MultiLLMGateway) GenerateCultureUpdate(ctx context.Context, prompt string) (string, error) {
+// 複数のLLMへの問い合わせ結果から「ランダムで1つ」選んで返す例
+func (m *MultiLLMGateway) GenerateCultureUpdate(
+	ctx context.Context,
+	prompt string,
+) (string, error) {
+	logger := zap.L()
+
 	if len(m.subGateways) == 0 {
-		// サブゲートウェイが無い場合のエラー
+		logger.Error("No sub gateways available in MultiLLMGateway")
 		return "", nil
 	}
 
-	// ランダムなサブゲートウェイを選ぶ
-	rand.Seed(time.Now().UnixNano())
-	gwIndex := rand.Intn(len(m.subGateways))
+	r := rand.New(rand.NewSource(42))
+	gwIndex := r.Intn(len(m.subGateways))
 	chosen := m.subGateways[gwIndex]
 
-	// 選んだゲートウェイで生成
+	logger.Debug("Selected sub gateway", zap.Int("index", gwIndex))
 	return chosen.GenerateCultureUpdate(ctx, prompt)
 }
 
-// Compile-time interface check
 var _ repository.LLMGateway = (*MultiLLMGateway)(nil)
