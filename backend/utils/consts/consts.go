@@ -1,7 +1,7 @@
 package consts
 
 const (
-	SpecifyingResponseFormat string = `このコミュニティの文化を新しい方向に進化させるアイデアを提案してください。あなたの出力は **必ず次のJSON形式** で返してください。
+	SpecifyingResponseFormat string = `このコミュニティの文化を新しい方向に進化させるアイデアを提案してください。**出力は必ず日本語で返してください。** あなたの出力は **必ず次のJSON形式** で返してください。
 {
     "newCulture": "string",
     "populationChange": 0

@@ -29,7 +29,7 @@ func (du *DiplomacyUsecase) ExecuteDiplomacy(
 ) error {
 	logger := zap.L()
 
-    // コミュニティを取得
+	// コミュニティを取得
 	logger.Debug("Executing diplomacy simulation",
 		zap.String("commA", commAID), zap.String("commB", commBID))
 	commA, err := du.communityRepo.GetByID(ctx, commAID)
@@ -41,7 +41,7 @@ func (du *DiplomacyUsecase) ExecuteDiplomacy(
 		return fmt.Errorf("failed to get community B: %w", err)
 	}
 
-    // LLMに外交交渉をリクエスト
+	// LLMに外交交渉をリクエスト
 	prompt := fmt.Sprintf(`コミュニティA: {Name: %s, Population: %d, Culture: %s}
     コミュニティB: {Name: %s, Population: %d, Culture: %s}
     この2つのコミュニティが外交交渉を行い、その結果をJSONで返してください。
@@ -55,7 +55,7 @@ func (du *DiplomacyUsecase) ExecuteDiplomacy(
 		commA.Name, commA.Population, commA.Culture,
 		commB.Name, commB.Population, commB.Culture)
 
-    // LLMにリクエスト
+	// LLMにリクエスト
 	logger.Debug("Diplomacy prompt", zap.String("prompt", prompt))
 	llmResp, err := du.llmGateway.GenerateCultureUpdate(ctx, prompt)
 	if err != nil {
@@ -76,7 +76,7 @@ func (du *DiplomacyUsecase) ExecuteDiplomacy(
 		return fmt.Errorf("invalid JSON from LLM: %w", err)
 	}
 
-	// コミュニティに反映
+	// 人口更新
 	commA.Population += result.PopChangeA
 	if commA.Population < 0 {
 		commA.Population = 0
@@ -86,9 +86,24 @@ func (du *DiplomacyUsecase) ExecuteDiplomacy(
 		commB.Population = 0
 	}
 
-    // 結果を記録
-	commA.UpdateCulture(fmt.Sprintf("%s | %s", commA.Culture, result.Outcome))
-	commB.UpdateCulture(fmt.Sprintf("%s | %s", commB.Culture, result.Outcome))
+	// 文化の更新は、外交交渉の outcome と description に基づいてより具体的に更新する
+	switch result.Outcome {
+	case "peace":
+		commA.UpdateCulture(fmt.Sprint(result.Description))
+		commB.UpdateCulture(fmt.Sprint(result.Description))
+	case "war":
+		commA.UpdateCulture(fmt.Sprint(result.Description))
+		commB.UpdateCulture(fmt.Sprint(result.Description))
+	case "trade":
+		commA.UpdateCulture(fmt.Sprint(result.Description))
+		commB.UpdateCulture(fmt.Sprint(result.Description))
+	case "alliance":
+		commA.UpdateCulture(fmt.Sprint(result.Description))
+		commB.UpdateCulture(fmt.Sprint(result.Description))
+	default:
+		commA.UpdateCulture(fmt.Sprint(result.Description))
+		commB.UpdateCulture(fmt.Sprint(result.Description))
+	}
 
 	// 保存
 	if err := du.communityRepo.Save(ctx, commA); err != nil {
