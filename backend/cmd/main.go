@@ -33,16 +33,20 @@ func main() {
 
 	// Mockゲートウェイ
 	mockGw := &gateway.MockLLMGatewayJSON{}
-	// MultiLLMGateway: 複数のLLMを束ねる集約ゲートウェイ
-	multiGw := gateway.NewMultiLLMGateway(llmGw, mockGw)
 
-	// ユースケース
+	// 既存: シミュレーション/外交/コミュニティユースケース
 	simulateUC := usecase.NewSimulateCultureEvolutionUsecase(communityRepo, agentRepo, llmGw)
 	diploUC := usecase.NewDiplomacyUsecase(communityRepo, llmGw)
 	communityUC := usecase.NewCommunityUsecase(communityRepo)
 
-	// 干渉用ユースケース: 集約ゲートウェイを渡す
-	interferenceUC := usecase.NewSimulateInterferenceUsecase(communityRepo, agentRepo, multiGw)
+	// 集約ゲートウェイ (複数LLMを内部でランダム使用するサンプル)
+	multiGw := gateway.NewMultiLLMGateway(llmGw, mockGw)
+
+	// 新規: コミュニティ同士の干渉ユースケース
+	interferenceBetweenCommunitiesUC := usecase.NewSimulateInterferenceBetweenCommunitiesUsecase(
+		communityRepo,
+		multiGw, // 複数LLMを渡す
+	)
 
 	// コントローラ
 	commCtrl := controller.NewCommunityController(communityUC)
@@ -51,13 +55,19 @@ func main() {
 	imageCtrl := controller.NewImageController(*communityUC)
 
 	// 干渉コントローラ
-	interferenceCtrl := controller.NewInterferenceController(interferenceUC)
+	interferenceCtrl := controller.NewInterferenceController(interferenceBetweenCommunitiesUC)
 
 	// データ初期化
 	seedData(communityRepo, agentRepo)
 
 	// ルーティング
-	r := router.NewRouter(commCtrl, diploCtrl, simCtrl, imageCtrl, interferenceCtrl)
+	r := router.NewRouter(
+		commCtrl,
+		diploCtrl,
+		simCtrl,
+		imageCtrl,
+		interferenceCtrl, // 新たに渡す
+	)
 
 	fmt.Println("Starting zousui MVP server on :8080")
 	r.Run(":8080")
