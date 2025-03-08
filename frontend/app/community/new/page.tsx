@@ -50,7 +50,7 @@ export default function NewCommunityPage() {
 
   return (
     <div>
-      <h2>Create New Community</h2>
+      <h2>コミュニティの新規作成</h2>
 
       <Form onSubmit={handleSubmit} className="mt-3">
         {/* ID */}
@@ -66,9 +66,9 @@ export default function NewCommunityPage() {
           />
         </Form.Group>
 
-        {/* Name */}
+        {/* 名前 */}
         <Form.Group className="mb-3" controlId="community-name">
-          <Form.Label>Name</Form.Label>
+          <Form.Label>名前</Form.Label>
           <Form.Control
             type="text"
             name="name"
@@ -78,9 +78,9 @@ export default function NewCommunityPage() {
           />
         </Form.Group>
 
-        {/* Description */}
+        {/* 説明 */}
         <Form.Group className="mb-3" controlId="community-description">
-          <Form.Label>Description</Form.Label>
+          <Form.Label>説明</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
@@ -90,9 +90,9 @@ export default function NewCommunityPage() {
           />
         </Form.Group>
 
-        {/* Population */}
+        {/* 人口 */}
         <Form.Group className="mb-3" controlId="community-population">
-          <Form.Label>Population</Form.Label>
+          <Form.Label>人口</Form.Label>
           <Form.Control
             type="number"
             name="population"
@@ -101,9 +101,9 @@ export default function NewCommunityPage() {
           />
         </Form.Group>
 
-        {/* Culture */}
+        {/* 文化 */}
         <Form.Group className="mb-3" controlId="community-culture">
-          <Form.Label>Culture</Form.Label>
+          <Form.Label>文化</Form.Label>
           <Form.Control
             as="textarea"
             rows={2}
@@ -115,7 +115,7 @@ export default function NewCommunityPage() {
 
         {/* Submit button */}
         <Button variant="primary" type="submit">
-          Create
+          生成
         </Button>
       </Form>
     </div>

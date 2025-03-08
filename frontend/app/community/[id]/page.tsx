@@ -97,27 +97,6 @@ export default function CommunityDetailPage() {
     }
   }
 
-  // ====== Interference Simulation ====== //
-  async function handleInterference() {
-    if (!community) return;
-    try {
-      const res = await fetch(
-        `http://localhost:8080/simulate/interference/${community.ID}`,
-        {
-          method: "POST",
-        }
-      );
-      if (!res.ok) {
-        throw new Error("Interference simulation failed.");
-      }
-      alert("Interference simulation succeeded.");
-      fetchCommunity(); // 最新データを再取得
-    } catch (err) {
-      console.error(err);
-      alert("Error occurred during interference simulation.");
-    }
-  }
-
   // ====== Edit (stub) ======
   async function handleEdit() {
     alert("Edit functionality is not implemented yet.");
@@ -191,22 +170,19 @@ export default function CommunityDetailPage() {
     <Container>
       <Row className="justify-content-center">
         <Col xs={12}>
-          <h2 className="my-4 text-center">Community Detail</h2>
+          <h2 className="my-4 text-center">コミュニティ詳細</h2>
           <Card>
             <Card.Body>
               <Card.Title className="text-center">{community.Name}</Card.Title>
               <Card.Text>ID: {community.ID}</Card.Text>
-              <Card.Text>Description: {community.Description}</Card.Text>
-              <Card.Text>Population: {community.Population}</Card.Text>
-              <Card.Title className="text-center"> Culture </Card.Title>
+              <Card.Text>説明: {community.Description}</Card.Text>
+              <Card.Text>人口: {community.Population}</Card.Text>
+              <Card.Title className="text-center"> 文化 </Card.Title>
               <Card.Text> {community.Culture}</Card.Text>
 
               <div className="d-flex flex-wrap gap-2 mt-4 justify-content-center">
                 <Button variant="primary" onClick={handleSimulate}>
                   シュミレート
-                </Button>
-                <Button variant="warning" onClick={handleInterference}>
-                  他国との干渉
                 </Button>
 
                 <Button variant="success" onClick={handleGenerateImage}>
@@ -242,7 +218,6 @@ export default function CommunityDetailPage() {
 
               {imageSrc && (
                 <div className="mt-3 text-center">
-                  <h5>Generated Image:</h5>
                   <Image
                     src={imageSrc}
                     alt="Generated"

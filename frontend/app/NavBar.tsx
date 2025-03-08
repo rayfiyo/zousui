@@ -20,13 +20,16 @@ export default function NavBar() {
         <Navbar.Collapse id="navbarNav">
           <Nav className="ms-auto">
             <Nav.Link as={Link} href="/">
-              Home
+              ホーム
             </Nav.Link>
             <Nav.Link as={Link} href="/community/new">
-              Create Community
+              新規作成
             </Nav.Link>
             <Nav.Link as={Link} href="/diplomacy">
-              Diplomacy
+              外交
+            </Nav.Link>
+            <Nav.Link as={Link} href="/interference">
+              干渉
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
