@@ -13,6 +13,7 @@ func NewRouter(
 	simCtrl *controller.SimulateController,
 	imageCtrl *controller.ImageController,
 	interferenceCtrl *controller.InterferenceController,
+	simulationCtrl *controller.SimulationController,
 ) *gin.Engine {
 	logger := zap.L()
 
@@ -40,6 +41,9 @@ func NewRouter(
 	// 干渉シミュレーション (コミュニティAとB)
 	r.POST("/simulate/interference",
 		interferenceCtrl.SimulateInterferenceBetweenCommunities)
+
+	// シミュレーション履歴取得API
+	r.GET("/simulations/history", simulationCtrl.GetSimulationHistory)
 
 	logger.Info("Router initialized")
 	return r
