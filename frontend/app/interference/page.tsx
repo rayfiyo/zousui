@@ -78,10 +78,10 @@ export default function InterferencePage() {
 
   return (
     <div>
-      <h2 className="mb-4 text-center">干渉シュミレーション</h2>
+      <h2 className="mb-4 text-center">干渉シミュレーション</h2>
       <Card className="mb-4">
         <Card.Body>
-          <Card.Title>干渉シュミレーションについて</Card.Title>
+          <Card.Title>干渉シミュレーションについて</Card.Title>
           <Card.Text>
             このシミュレーションでは、2つの異なるコミュニティを選択し、
             外部からの影響がどのように影響し合うかを見ることができるよ。

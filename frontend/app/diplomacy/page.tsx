@@ -55,7 +55,7 @@ export default function DiplomacyPage() {
 
   return (
     <div>
-      <h2>外交シュミレーション</h2>
+      <h2>外交シミュレーション</h2>
 
       <Form>
         {/* コミュニティ A */}
