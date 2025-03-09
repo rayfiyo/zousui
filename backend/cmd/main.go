@@ -61,16 +61,14 @@ func main() {
 	logger.Debug("Multi LLM gateway initialized")
 
 	// コミュニティ同士の干渉ユースケース
-	interferenceBetweenCommunitiesUC := usecase.
-		NewSimulateInterferenceBetweenCommunitiesUsecase(communityRepo, multiGw)
-	logger.Debug("Interference usecase initialized")
+	interferenceUC := usecase.NewSimulateInterferenceBetweenCommunitiesUsecase(communityRepo, multiGw, simulationRepo)
 
 	// コントローラ
 	commCtrl := controller.NewCommunityController(communityUC)
 	diploCtrl := controller.NewDiplomacyController(diploUC)
 	simCtrl := controller.NewSimulateController(simulateUC)
 	imageCtrl := controller.NewImageController(*communityUC)
-	interferenceCtrl := controller.NewInterferenceController(interferenceBetweenCommunitiesUC)
+	interferenceCtrl := controller.NewInterferenceController(interferenceUC)
 	simulationCtrl := controller.NewSimulationController(simulationRepo)
 	logger.Debug("Controllers initialized")
 
