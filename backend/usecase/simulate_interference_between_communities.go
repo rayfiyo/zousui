@@ -114,12 +114,13 @@ func (uc *SimulateInterferenceBetweenCommunitiesUsecase) Execute(
 		var tmp map[string]interface{}
 		if err2 := json.Unmarshal([]byte(llmResp), &tmp); err2 == nil {
 			if nc, ok := tmp["newCulture"].(string); ok {
+				// A のみ変更を適用
 				result.NewCultureA = nc
-				result.NewCultureB = nc
+				// result.NewCultureB = nc
 			}
 			if pc, ok := tmp["populationChange"].(float64); ok {
 				result.PopulationChangeA = int(pc)
-				result.PopulationChangeB = int(pc)
+				// result.PopulationChangeB = int(pc)
 			}
 		}
 	}
