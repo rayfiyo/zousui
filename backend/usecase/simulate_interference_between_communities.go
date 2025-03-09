@@ -5,24 +5,28 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/rayfiyo/zousui/backend/domain/entity"
 	"github.com/rayfiyo/zousui/backend/domain/repository"
 	"github.com/rayfiyo/zousui/backend/utils/consts"
 	"go.uber.org/zap"
 )
 
 type SimulateInterferenceBetweenCommunitiesUsecase struct {
-	communityRepo repository.CommunityRepository
-	llmGateway    repository.LLMGateway // MultiLLMGateway を想定
+	communityRepo  repository.CommunityRepository
+	llmGateway     repository.LLMGateway
+	simulationRepo repository.SimulationRepository
 }
 
 func NewSimulateInterferenceBetweenCommunitiesUsecase(
 	cr repository.CommunityRepository,
 	lg repository.LLMGateway,
+	sr repository.SimulationRepository,
 ) *SimulateInterferenceBetweenCommunitiesUsecase {
 	zap.L().Debug("Initializing SimulateInterferenceBetweenCommunitiesUsecase")
 	return &SimulateInterferenceBetweenCommunitiesUsecase{
-		communityRepo: cr,
-		llmGateway:    lg,
+		communityRepo:  cr,
+		llmGateway:     lg,
+		simulationRepo: sr,
 	}
 }
 
@@ -142,7 +146,7 @@ func (uc *SimulateInterferenceBetweenCommunitiesUsecase) Execute(
 		commB.Population = 0
 	}
 
-	// 保存
+	//
 	if err := uc.communityRepo.Save(ctx, commA); err != nil {
 		logger.Error("Failed to save community A",
 			zap.String("commA", commAID), zap.Error(err))
@@ -153,6 +157,19 @@ func (uc *SimulateInterferenceBetweenCommunitiesUsecase) Execute(
 			zap.String("commB", commBID), zap.Error(err))
 		return fmt.Errorf("failed to save community B: %w", err)
 	}
+
+	resultJSON, _ := json.Marshal(result)
+	simResult := &entity.SimulationResult{
+		Type:        "interference",
+		Communities: []string{commAID, commBID},
+		ResultJSON:  string(resultJSON),
+	}
+	if err := uc.simulationRepo.Save(ctx, simResult); err != nil {
+		logger.Error("Failed to save community B",
+			zap.String("commB", commBID), zap.Error(err))
+		return fmt.Errorf("failed to save community B: %w", err)
+	}
+
 	logger.Info("Interference between communities executed successfully",
 		zap.String("commA", commAID), zap.String("commB", commBID))
 	return nil
