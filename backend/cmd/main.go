@@ -29,6 +29,7 @@ func main() {
 	// リポジトリ初期化
 	communityRepo := repository.NewMemoryCommunityRepo()
 	agentRepo := repository.NewMemoryAgentRepo()
+	simulationRepo := repository.NewMemorySimulationRepo()
 	logger.Debug("Repositories initialized")
 
 	// 環境変数ロード
@@ -70,6 +71,7 @@ func main() {
 	simCtrl := controller.NewSimulateController(simulateUC)
 	imageCtrl := controller.NewImageController(*communityUC)
 	interferenceCtrl := controller.NewInterferenceController(interferenceBetweenCommunitiesUC)
+	simulationCtrl := controller.NewSimulationController(simulationRepo)
 	logger.Debug("Controllers initialized")
 
 	// データ初期化
@@ -82,7 +84,8 @@ func main() {
 		diploCtrl,
 		simCtrl,
 		imageCtrl,
-		interferenceCtrl, // 新たに渡す
+		interferenceCtrl,
+		simulationCtrl,
 	)
 	logger.Info("Router initialized")
 
