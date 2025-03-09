@@ -29,7 +29,7 @@ func NewSimulateInterferenceBetweenCommunitiesUsecase(
 // 干渉シミュレーション本体
 func (uc *SimulateInterferenceBetweenCommunitiesUsecase) Execute(
 	ctx context.Context,
-	commAID, commBID string,
+	commAID, commBID, userInput string,
 ) error {
 	logger := zap.L()
 
@@ -88,27 +88,42 @@ func (uc *SimulateInterferenceBetweenCommunitiesUsecase) Execute(
 	// LLM呼び出し (MultiLLMGatewayを想定)
 	logger.Debug("Interference between communities prompt",
 		zap.String("prompt", prompt))
-	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt)
+	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt, userInput)
 	if err != nil {
 		logger.Error("LLM generation failed", zap.Error(err))
 		return fmt.Errorf("failed to generate culture update: %w", err)
 	}
 
 	// JSONパース
-	logger.Debug("LLM response", zap.String("response", llmResp))
 	var result struct {
 		NewCultureA       string `json:"newCultureA"`
 		PopulationChangeA int    `json:"populationChangeA"`
 		NewCultureB       string `json:"newCultureB"`
 		PopulationChangeB int    `json:"populationChangeB"`
 	}
-
 	if err := json.Unmarshal([]byte(llmResp), &result); err != nil {
 		logger.Error("JSON unmarshal failed", zap.Error(err),
 			zap.String("response", llmResp))
 		return fmt.Errorf("invalid JSON from LLM: %w\nLLM response was: %s",
 			err, llmResp)
 	}
+
+	// expected フィールドが空なら、"newCulture" と "populationChange" キーで再取得
+	if result.NewCultureA == "" && result.NewCultureB == "" {
+		logger.Warn("LLM response missing expected keys, applying fallback parsing")
+		var tmp map[string]interface{}
+		if err2 := json.Unmarshal([]byte(llmResp), &tmp); err2 == nil {
+			if nc, ok := tmp["newCulture"].(string); ok {
+				result.NewCultureA = nc
+				result.NewCultureB = nc
+			}
+			if pc, ok := tmp["populationChange"].(float64); ok {
+				result.PopulationChangeA = int(pc)
+				result.PopulationChangeB = int(pc)
+			}
+		}
+	}
+	logger.Debug("Interference result", zap.Any("result", result))
 
 	// 結果をコミュニティA, Bに反映
 	if result.NewCultureA != "" {
@@ -128,13 +143,16 @@ func (uc *SimulateInterferenceBetweenCommunitiesUsecase) Execute(
 
 	// 保存
 	if err := uc.communityRepo.Save(ctx, commA); err != nil {
-		logger.Error("Failed to save community A", zap.String("commA", commAID), zap.Error(err))
+		logger.Error("Failed to save community A",
+			zap.String("commA", commAID), zap.Error(err))
 		return fmt.Errorf("failed to save community A: %w", err)
 	}
 	if err := uc.communityRepo.Save(ctx, commB); err != nil {
-		logger.Error("Failed to save community B", zap.String("commB", commBID), zap.Error(err))
+		logger.Error("Failed to save community B",
+			zap.String("commB", commBID), zap.Error(err))
 		return fmt.Errorf("failed to save community B: %w", err)
 	}
-	logger.Info("Interference between communities executed successfully", zap.String("commA", commAID), zap.String("commB", commBID))
+	logger.Info("Interference between communities executed successfully",
+		zap.String("commA", commAID), zap.String("commB", commBID))
 	return nil
 }

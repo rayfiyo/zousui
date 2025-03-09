@@ -72,7 +72,7 @@ func (uc *SimulateInterferenceUsecase) Execute(
 
 	// LLM呼び出し (MultiLLMGateway などが内部で複数LLMを利用)
 	logger.Debug("Interference simulation prompt", zap.String("prompt", prompt))
-	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt)
+	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt, "")
 	if err != nil {
 		return fmt.Errorf("failed to generate culture update: %w", err)
 	}

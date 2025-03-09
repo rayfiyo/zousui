@@ -8,6 +8,13 @@ import (
 	"go.uber.org/zap"
 )
 
+// リクエストボディの構造体
+type InterferenceRequest struct {
+	CommA     string `json:"commA"`
+	CommB     string `json:"commB"`
+	UserInput string `json:"userInput"`
+}
+
 // コミュニティ同士の干渉を行うコントローラ
 type InterferenceController struct {
 	interferenceUC *usecase.SimulateInterferenceBetweenCommunitiesUsecase
@@ -26,31 +33,33 @@ func (ic *InterferenceController) SimulateInterferenceBetweenCommunities(
 ) {
 	logger := zap.L()
 
-	commA := c.Query("commA")
-	commB := c.Query("commB")
-	logger.Debug("Simulating interference", zap.String("commA", commA), zap.String("commB", commB))
-
-	if commA == "" || commB == "" {
-		c.JSON(http.StatusBadRequest,
-			gin.H{"error": "missing commA or commB parameter"})
-		return
-	}
-	if commA == commB {
-		c.JSON(http.StatusBadRequest,
-			gin.H{"error": "commA and commB must be different"})
+	var req InterferenceRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		logger.Error("invalid request body", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 
-	if err := ic.interferenceUC.Execute(c, commA, commB); err != nil {
+	if req.CommA == "" || req.CommB == "" || req.CommA == req.CommB {
+		logger.Error("commA and commB must be provided and different")
+		c.JSON(http.StatusBadRequest,
+			gin.H{"error": "commA and commB must be provided and different"})
+		return
+	}
+
+	// Usecase実行
+	if err := ic.interferenceUC.Execute(
+		c, req.CommA, req.CommB, req.UserInput,
+	); err != nil {
+		logger.Error("failed to execute interference simulation", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	logger.Info("Interference simulation succeeded",
-		zap.String("commA", commA), zap.String("commB", commB))
+	// 成功応答
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Interference simulation done",
-		"commA":   commA,
-		"commB":   commB,
+		"commA":   req.CommA,
+		"commB":   req.CommB,
 	})
 }

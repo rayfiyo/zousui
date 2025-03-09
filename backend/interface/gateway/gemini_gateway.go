@@ -53,6 +53,7 @@ func NewGeminiLLMGateway(
 func (g *GeminiLLMGateway) GenerateCultureUpdate(
 	ctx context.Context,
 	prompt string,
+	userInput string,
 ) (string, error) {
 	logger := zap.L()
 

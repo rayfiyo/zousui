@@ -57,7 +57,7 @@ func (du *DiplomacyUsecase) ExecuteDiplomacy(
 
 	// LLMにリクエスト
 	logger.Debug("Diplomacy prompt", zap.String("prompt", prompt))
-	llmResp, err := du.llmGateway.GenerateCultureUpdate(ctx, prompt)
+	llmResp, err := du.llmGateway.GenerateCultureUpdate(ctx, prompt, "")
 	if err != nil {
 		logger.Error("LLM generation failed", zap.Error(err))
 		return err

@@ -24,5 +24,5 @@ type CommunityRepository interface {
 
 // LLMGateway: LLMに問い合わせるためのインタフェース
 type LLMGateway interface {
-	GenerateCultureUpdate(ctx context.Context, prompt string) (string, error)
+	GenerateCultureUpdate(ctx context.Context, prompt, userInput string) (string, error)
 }

@@ -67,7 +67,7 @@ func (uc *SimulateCultureEvolutionUsecase) Execute(
 
 	// LLMに問い合わせ
 	logger.Debug("Simulation prompt", zap.String("prompt", prompt))
-	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt)
+	llmResp, err := uc.llmGateway.GenerateCultureUpdate(ctx, prompt, "")
 	if err != nil {
 		logger.Error("LLM generation failed", zap.Error(err))
 		return fmt.Errorf("failed to generate culture update: %w", err)

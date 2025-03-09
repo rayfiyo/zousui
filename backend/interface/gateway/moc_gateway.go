@@ -14,6 +14,7 @@ type MockLLMGatewayJSON struct{}
 func (m *MockLLMGatewayJSON) GenerateCultureUpdate(
 	ctx context.Context,
 	prompt string,
+	userInput string,
 ) (string, error) {
 	logger := zap.L()
 
