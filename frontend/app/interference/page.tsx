@@ -20,7 +20,12 @@ export default function InterferencePage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isSimulating, setIsSimulating] = useState(false);
-  const [simulationResult, setSimulationResult] = useState<any>(null);
+  type SimulationResult = {
+    success: boolean;
+    details: string;
+  };
+  const [simulationResult, setSimulationResult] =
+    useState<SimulationResult | null>(null);
 
   // コミュニティ一覧を取得
   async function fetchCommunities() {
@@ -31,9 +36,13 @@ export default function InterferencePage() {
       }
       const data = await res.json();
       setCommunities(data);
-    } catch (err: any) {
-      console.error(err);
-      setError("Error fetching communities.");
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+        setError("Error fetching communities.");
+      } else {
+        setError("Unknown error occurred.");
+      }
     }
   }
 
@@ -65,8 +74,13 @@ export default function InterferencePage() {
       const result = await res.json();
       setMessage("Interference simulation completed successfully.");
       setSimulationResult(result);
-    } catch (err: any) {
-      setError(err.message || "Unknown error during interference simulation.");
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.message);
+        setError("Unknown error during interference simulation.");
+      } else {
+        setError("Unknown error occurred.");
+      }
     } finally {
       setIsSimulating(false);
     }

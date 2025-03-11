@@ -149,7 +149,7 @@ export default function CommunityDetailPage() {
     if (communityID) {
       fetchCommunity();
     }
-  }, [fetchCommunity]);
+  }, [fetchCommunity, communityID]);
 
   // 読み込み中にスピナーを表示
   if (loading && !community) {
