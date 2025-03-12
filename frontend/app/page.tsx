@@ -14,7 +14,7 @@ type Community = {
 export default function HomePage() {
   const [communities, setCommunities] = useState<Community[]>([]);
 
-  // 1. コミュニティ一覧を取得
+  // コミュニティ一覧を取得
   async function fetchCommunities() {
     try {
       const res = await fetch("http://localhost:8080/communities");
@@ -28,7 +28,7 @@ export default function HomePage() {
     }
   }
 
-  // 2. コミュニティ削除
+  // コミュニティ削除
   async function handleDelete(id: string) {
     const confirmed = window.confirm(
       "Are you sure you want to delete this community?"
@@ -49,7 +49,7 @@ export default function HomePage() {
     }
   }
 
-  // 3. シミュレーションAPI呼び出し
+  // シミュレーションAPI呼び出し
   async function handleSimulate(communityID: string) {
     try {
       const res = await fetch(`http://localhost:8080/simulate/${communityID}`, {

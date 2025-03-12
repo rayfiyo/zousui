@@ -3,8 +3,8 @@ package router
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
 	"github.com/rayfiyo/zousui/backend/interface/controller"
+	"go.uber.org/zap"
 )
 
 func NewRouter(
@@ -13,7 +13,12 @@ func NewRouter(
 	simCtrl *controller.SimulateController,
 	imageCtrl *controller.ImageController,
 	interferenceCtrl *controller.InterferenceController,
+	simulationCtrl *controller.SimulationController,
 ) *gin.Engine {
+	logger := zap.L()
+
+	logger.Debug("Initializing router")
+
 	// Gin
 	r := gin.Default()
 	r.Use(cors.Default())
@@ -33,8 +38,13 @@ func NewRouter(
 	// 画像生成API
 	r.POST("/communities/:communityID/generateImage", imageCtrl.GenerateImage)
 
-	// 干渉シミュレーション
-	r.POST("/simulate/interference/:communityID", interferenceCtrl.SimulateInterference)
+	// 干渉シミュレーション (コミュニティAとB)
+	r.POST("/simulate/interference",
+		interferenceCtrl.SimulateInterferenceBetweenCommunities)
 
+	// シミュレーション履歴取得API
+	r.GET("/simulations/history", simulationCtrl.GetSimulationHistory)
+
+	logger.Info("Router initialized")
 	return r
 }

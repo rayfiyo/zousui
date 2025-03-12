@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 
-type Community = {
+type コミュニティ = {
   ID: string;
   Name: string;
 };
 
 export default function DiplomacyPage() {
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<コミュニティ[]>([]);
   const [commA, setCommA] = useState("");
   const [commB, setCommB] = useState("");
 
@@ -55,14 +55,14 @@ export default function DiplomacyPage() {
 
   return (
     <div>
-      <h2>Diplomacy Simulation</h2>
+      <h2>外交シミュレーション</h2>
 
       <Form>
-        {/* Community A */}
+        {/* コミュニティ A */}
         <Form.Group className="mb-3" controlId="communityA">
-          <Form.Label>Community A</Form.Label>
+          <Form.Label>コミュニティ A</Form.Label>
           <Form.Select value={commA} onChange={(e) => setCommA(e.target.value)}>
-            <option value="">-- select --</option>
+            <option value="">-- 選択 --</option>
             {communities.map((c) => (
               <option key={c.ID} value={c.ID}>
                 {c.Name}
@@ -71,11 +71,11 @@ export default function DiplomacyPage() {
           </Form.Select>
         </Form.Group>
 
-        {/* Community B */}
+        {/* コミュニティ B */}
         <Form.Group className="mb-3" controlId="communityB">
-          <Form.Label>Community B</Form.Label>
+          <Form.Label>コミュニティ B</Form.Label>
           <Form.Select value={commB} onChange={(e) => setCommB(e.target.value)}>
-            <option value="">-- select --</option>
+            <option value="">-- 選択 --</option>
             {communities.map((c) => (
               <option key={c.ID} value={c.ID}>
                 {c.Name}
@@ -84,9 +84,8 @@ export default function DiplomacyPage() {
           </Form.Select>
         </Form.Group>
 
-        {/* 実行ボタン */}
         <Button variant="primary" onClick={handleDiplomacySim}>
-          Simulate Diplomacy
+          実行
         </Button>
       </Form>
     </div>
